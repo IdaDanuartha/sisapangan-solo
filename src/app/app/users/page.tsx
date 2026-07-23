@@ -16,7 +16,8 @@ import {
   UserCheck,
   UserX,
   MapPin,
-  Phone
+  Phone,
+  Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
@@ -37,6 +38,8 @@ interface UserProfile {
   is_disabled?: boolean;
   whatsapp_opt_in: boolean;
   created_at: string;
+  ktp_url?: string | null;
+  verification_document_url?: string | null;
 }
 
 export default function UserManagementPage() {
@@ -58,6 +61,17 @@ export default function UserManagementPage() {
   const [editVerified, setEditVerified] = useState(false);
   const [editDisabled, setEditDisabled] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Signed URLs for document reviews
+  const [ktpSignedUrl, setKtpSignedUrl] = useState<string | null>(null);
+  const [docSignedUrl, setDocSignedUrl] = useState<string | null>(null);
+
+  // Detail user modal state
+  const [detailUser, setDetailUser] = useState<UserProfile | null>(null);
+  const [detailKtpUrl, setDetailKtpUrl] = useState<string | null>(null);
+  const [detailDocUrl, setDetailDocUrl] = useState<string | null>(null);
+
+
 
   async function loadUsers() {
     setLoading(true);
@@ -217,7 +231,55 @@ export default function UserManagementPage() {
     setEditLocation(user.location || "");
     setEditVerified(user.is_verified);
     setEditDisabled(user.is_disabled || false);
+
+    // Reset and load document signed URLs
+    setKtpSignedUrl(null);
+    setDocSignedUrl(null);
+
+    const supabase = createClient();
+    if (user.ktp_url) {
+      supabase.storage
+        .from("verification-documents")
+        .createSignedUrl(user.ktp_url, 3600)
+        .then(({ data }) => {
+          if (data) setKtpSignedUrl(data.signedUrl);
+        });
+    }
+    if (user.verification_document_url) {
+      supabase.storage
+        .from("verification-documents")
+        .createSignedUrl(user.verification_document_url, 3600)
+        .then(({ data }) => {
+          if (data) setDocSignedUrl(data.signedUrl);
+        });
+    }
   }
+
+  function handleOpenDetail(user: UserProfile) {
+    setDetailUser(user);
+    setDetailKtpUrl(null);
+    setDetailDocUrl(null);
+
+    const supabase = createClient();
+    if (user.ktp_url) {
+      supabase.storage
+        .from("verification-documents")
+        .createSignedUrl(user.ktp_url, 3600)
+        .then(({ data }) => {
+          if (data) setDetailKtpUrl(data.signedUrl);
+        });
+    }
+    if (user.verification_document_url) {
+      supabase.storage
+        .from("verification-documents")
+        .createSignedUrl(user.verification_document_url, 3600)
+        .then(({ data }) => {
+          if (data) setDetailDocUrl(data.signedUrl);
+        });
+    }
+  }
+
+
 
   async function handleSaveEdit(e: React.FormEvent) {
     e.preventDefault();
@@ -576,7 +638,18 @@ export default function UserManagementPage() {
                             </button>
                           )}
 
+                          {/* Detail Shortcut */}
+                          <button
+                            type="button"
+                            onClick={() => handleOpenDetail(user)}
+                            className="p-1.5 rounded-[6px] border border-[#9AA39C]/40 bg-white text-[#5B655D] hover:bg-[#F4F6F3] transition-all cursor-pointer"
+                            title="Lihat Detail Pengguna"
+                          >
+                            <Eye size={14} />
+                          </button>
+
                           {/* Edit Details */}
+
                           <button
                             type="button"
                             onClick={() => handleOpenEdit(user)}
@@ -651,7 +724,52 @@ export default function UserManagementPage() {
               placeholder="Contoh: Jl. Slamet Riyadi No. 12, Surakarta"
             />
 
+            {/* Verification Documents Review (Admin View) */}
+            {["volunteer", "non-consumption"].includes(editRole) && (
+              <div className="space-y-3 pt-2 border-t border-[#E4F0E8] mt-2">
+                <span className="text-xs font-bold text-[#1B1F1C] block">Dokumen Verifikasi Pengguna</span>
+                <div className="grid grid-cols-2 gap-3">
+                  {/* KTP Link */}
+                  <div className="p-2.5 rounded-[8px] border border-[#E4F0E8] bg-white flex flex-col justify-between min-h-[90px]">
+                    <span className="text-[10px] font-bold text-[#9AA39C] block">Foto KTP</span>
+                    {ktpSignedUrl ? (
+                      <a
+                        href={ktpSignedUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 text-xs text-[#2F6E4F] font-bold hover:underline block truncate"
+                      >
+                        Buka Foto KTP ↗
+                      </a>
+                    ) : (
+                      <span className="mt-2 text-[10px] text-[#9AA39C] italic block">Belum Diunggah</span>
+                    )}
+                  </div>
+
+                  {/* Land/Community Document Link */}
+                  <div className="p-2.5 rounded-[8px] border border-[#E4F0E8] bg-white flex flex-col justify-between min-h-[90px]">
+                    <span className="text-[10px] font-bold text-[#9AA39C] block">
+                      {editRole === "non-consumption" ? "Bukti Lahan" : "Bukti Komunitas"}
+                    </span>
+                    {docSignedUrl ? (
+                      <a
+                        href={docSignedUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 text-xs text-[#2F6E4F] font-bold hover:underline block truncate"
+                      >
+                        Buka Dokumen ↗
+                      </a>
+                    ) : (
+                      <span className="mt-2 text-[10px] text-[#9AA39C] italic block">Belum Diunggah</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Checkbox Controls */}
+
             <div className="space-y-3 pt-2 border-t border-[#E4F0E8] mt-2">
               <div className="flex items-center justify-between p-2 rounded-[8px] bg-[#F4F6F3]">
                 <div className="space-y-0.5">
@@ -703,6 +821,135 @@ export default function UserManagementPage() {
           </form>
         </Modal>
       )}
+
+      {/* Detail User Modal */}
+      {detailUser && (
+        <Modal
+          isOpen={!!detailUser}
+          onClose={() => setDetailUser(null)}
+          title="Detail Profil Pengguna"
+          size="md"
+        >
+          <div className="space-y-4 font-sans text-sm text-[#5B655D]">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Nama Lengkap</span>
+                <span className="text-sm font-semibold text-[#1B1F1C] block">{detailUser.name}</span>
+              </div>
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Peran Sistem</span>
+                <span className="text-sm font-semibold text-[#2F6E4F] block capitalize">
+                  {detailUser.role === "non-consumption" ? "Non-Konsumsi (Mitra)" : detailUser.role}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 border-t border-[#E4F0E8] pt-3">
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Kategori / Tipe</span>
+                <span className="text-sm font-semibold text-[#1B1F1C] block">{detailUser.type || "—"}</span>
+              </div>
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Kontak WhatsApp</span>
+                {detailUser.contact_number ? (
+                  <a
+                    href={`https://wa.me/62${detailUser.contact_number.replace(/^0/, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-bold text-[#3AA65A] hover:underline flex items-center gap-1"
+                  >
+                    <Phone size={12} />
+                    {detailUser.contact_number} ↗
+                  </a>
+                ) : (
+                  <span className="text-sm font-semibold text-[#1B1F1C] block">—</span>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-1.5 border-t border-[#E4F0E8] pt-3">
+              <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Alamat / Lokasi Operasional</span>
+              <span className="text-sm font-semibold text-[#1B1F1C] block">{detailUser.location || "—"}</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 border-t border-[#E4F0E8] pt-3">
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Status Akun</span>
+                <span className={`inline-flex text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  detailUser.is_disabled ? "bg-[#FAEAEA] text-[#D14343]" : "bg-[#EBF5EE] text-[#3AA65A]"
+                }`}>
+                  {detailUser.is_disabled ? "Nonaktif" : "Aktif"}
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Status Verifikasi</span>
+                <span className={`inline-flex text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  detailUser.is_verified ? "bg-[#EBF5EE] text-[#2F6E4F]" : "bg-[#FDF2F2] text-[#D14343]"
+                }`}>
+                  {detailUser.is_verified ? "Terverifikasi" : "Belum Terverifikasi"}
+                </span>
+              </div>
+            </div>
+
+            {/* Documents Preview */}
+            {["volunteer", "non-consumption"].includes(detailUser.role) && (
+              <div className="border-t border-[#E4F0E8] pt-4 space-y-3">
+                <span className="text-xs font-bold text-[#1B1F1C] block">Dokumen Pendukung & Verifikasi</span>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* KTP */}
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-bold text-[#9AA39C] block">Kartu Tanda Penduduk (KTP)</span>
+                    {detailKtpUrl ? (
+                      <div className="space-y-1">
+                        <a href={detailKtpUrl} target="_blank" rel="noreferrer" className="block border border-[#E4F0E8] rounded-[8px] overflow-hidden bg-[#F4F6F3] hover:opacity-90 transition-opacity">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={detailKtpUrl} alt="KTP Preview" className="w-full h-24 object-cover" />
+                        </a>
+                        <a href={detailKtpUrl} target="_blank" rel="noreferrer" className="text-[10px] text-[#2F6E4F] font-bold hover:underline block text-center">Buka Tab Baru ↗</a>
+                      </div>
+                    ) : (
+                      <div className="h-24 border border-dashed border-[#9AA39C]/40 rounded-[8px] flex items-center justify-center bg-[#F4F6F3] text-[10px] text-[#9AA39C] italic">
+                        Belum Diunggah
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Verification Document */}
+                  <div className="space-y-2">
+                    <span className="text-[10px] font-bold text-[#9AA39C] block">
+                      {detailUser.role === "non-consumption" ? "Bukti Kepemilikan Lahan" : "Bukti Komunitas"}
+                    </span>
+                    {detailDocUrl ? (
+                      <div className="space-y-1">
+                        <a href={detailDocUrl} target="_blank" rel="noreferrer" className="block border border-[#E4F0E8] rounded-[8px] overflow-hidden bg-[#F4F6F3] hover:opacity-90 transition-opacity">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={detailDocUrl} alt="Dokumen Preview" className="w-full h-24 object-cover" />
+                        </a>
+                        <a href={detailDocUrl} target="_blank" rel="noreferrer" className="text-[10px] text-[#2F6E4F] font-bold hover:underline block text-center">Buka Tab Baru ↗</a>
+                      </div>
+                    ) : (
+                      <div className="h-24 border border-dashed border-[#9AA39C]/40 rounded-[8px] flex items-center justify-center bg-[#F4F6F3] text-[10px] text-[#9AA39C] italic">
+                        Belum Diunggah
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex justify-end pt-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setDetailUser(null)}
+              >
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
+
   );
 }

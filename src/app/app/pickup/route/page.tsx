@@ -150,6 +150,16 @@ export default function PickupRoutePage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [selectedIssueReason, setSelectedIssueReason] = useState("");
 
+  // Geofenced Delivery States
+  const [deliveryBatchId, setDeliveryBatchId] = useState<string | null>(null);
+  const [deliveryPhotoFile, setDeliveryPhotoFile] = useState<File | null>(null);
+  const [deliveryPhotoPreview, setDeliveryPhotoPreview] = useState<string>("");
+  const [deliveryGpsLoading, setDeliveryGpsLoading] = useState(false);
+  const [deliveryGpsLat, setDeliveryGpsLat] = useState<number | null>(null);
+  const [deliveryGpsLng, setDeliveryGpsLng] = useState<number | null>(null);
+  const [deliveryDistance, setDeliveryDistance] = useState<number | null>(null);
+
+
   const activeBatches = useMemo(() => {
     return activeTab === "hari-ini"
       ? batches.filter((b) => b.status === "Diklaim" || b.status === "Diambil")
@@ -527,55 +537,134 @@ export default function PickupRoutePage() {
     showToast("Makanan berhasil diambil dari donor!", "success");
   }
 
-  async function markDelivered(batchId: string) {
-    setCompleting(batchId);
+  const startDeliveryVerification = (batchId: string) => {
+    setDeliveryBatchId(batchId);
+    setDeliveryPhotoFile(null);
+    setDeliveryPhotoPreview("");
+    setDeliveryGpsLat(null);
+    setDeliveryGpsLng(null);
+    setDeliveryDistance(null);
+    setDeliveryGpsLoading(true);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setDeliveryGpsLat(lat);
+          setDeliveryGpsLng(lng);
+
+          const batch = batches.find((b) => b.id === batchId);
+          if (batch) {
+            const recip = selectedRecipients[batchId] || getClosestRecipient(batch);
+            const dist = calculateDistance(lat, lng, recip.lat, recip.lng);
+            setDeliveryDistance(dist * 1000); // distance in meters
+          }
+          setDeliveryGpsLoading(false);
+        },
+        (err) => {
+          console.error("Gagal mendapatkan lokasi GPS:", err);
+          showToast("Gagal mendeteksi lokasi GPS untuk Geofencing.", "warning");
+          setDeliveryGpsLoading(false);
+        },
+        { timeout: 8000 }
+      );
+    } else {
+      showToast("Browser Anda tidak mendukung Geolokasi.", "error");
+      setDeliveryGpsLoading(false);
+    }
+  };
+
+  async function submitDeliveryConfirm() {
+    if (!deliveryBatchId) return;
+    if (!deliveryPhotoFile) {
+      showToast("Harap unggah foto bukti serah terima.", "warning");
+      return;
+    }
+
+    setCompleting(deliveryBatchId);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setCompleting(null); return; }
 
-    const activeBatchName = batches.find((b) => b.id === batchId)?.name || "Surplus Pangan";
+    const activeBatchName = batches.find((b) => b.id === deliveryBatchId)?.name || "Surplus Pangan";
 
-    // Update surplus_batch status
-    const { error: batchErr } = await supabase
-      .from("surplus_batch")
-      .update({ status: "Selesai" })
-      .eq("id", batchId);
-    if (batchErr) {
-      showToast("Gagal menyelesaikan rute: " + batchErr.message, "error");
-      setCompleting(null);
-      return;
-    }
-
-    // Update the existing distribution_log row (change Diambil → Selesai)
-    const { error: logErr } = await supabase
-      .from("distribution_log")
-      .update({ status: "Selesai", timestamp: new Date().toISOString() })
-      .eq("batch_id", batchId)
-      .eq("volunteer_id", user.id)
-      .eq("status", "Diambil");
-    if (logErr) {
-      showToast("Gagal mencatat log selesai: " + logErr.message, "error");
-      setCompleting(null);
-      return;
-    }
-
-    // Log activity
     try {
-      await logUserActivity({
-        userId: user.id,
-        action: "Menyelesaikan Distribusi Pangan",
-        resourceType: "surplus_batch",
-        resourceId: batchId,
-        metadata: { name: activeBatchName, status: "Selesai" },
-      });
-    } catch (logErr) {
-      console.error("Gagal mencatat log aktivitas:", logErr);
-    }
+      // 1. Upload photo to surplus-photos bucket
+      const fileExt = deliveryPhotoFile.name.split(".").pop();
+      const fileName = `${deliveryBatchId}_delivery_${Date.now()}.${fileExt}`;
+      const filePath = `deliveries/${fileName}`;
 
-    await load();
-    setCompleting(null);
-    showToast("Pengantaran berhasil diselesaikan!", "success");
+      const { error: uploadErr } = await supabase.storage
+        .from("surplus-photos")
+        .upload(filePath, deliveryPhotoFile, { upsert: true });
+
+      if (uploadErr) throw uploadErr;
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("surplus-photos")
+        .getPublicUrl(filePath);
+
+      const deliveryPhotoUrl = publicUrlData.publicUrl;
+
+      // Determine if delivery is verified (within 150m of recipient)
+      const isVerified = deliveryDistance !== null && deliveryDistance <= 150;
+
+      // 2. Update surplus_batch status and delivery details
+      const { error: batchErr } = await supabase
+        .from("surplus_batch")
+        .update({
+          status: "Selesai",
+          delivery_photo_url: deliveryPhotoUrl,
+          delivery_lat: deliveryGpsLat,
+          delivery_lng: deliveryGpsLng,
+          delivery_verified: isVerified,
+        })
+        .eq("id", deliveryBatchId);
+
+      if (batchErr) throw batchErr;
+
+      // 3. Update the existing distribution_log row (change Diambil → Selesai)
+      const { error: logErr } = await supabase
+        .from("distribution_log")
+        .update({ status: "Selesai", timestamp: new Date().toISOString() })
+        .eq("batch_id", deliveryBatchId)
+        .eq("volunteer_id", user.id)
+        .eq("status", "Diambil");
+
+      if (logErr) throw logErr;
+
+      // Log activity
+      try {
+        await logUserActivity({
+          userId: user.id,
+          action: "Menyelesaikan Distribusi Pangan",
+          resourceType: "surplus_batch",
+          resourceId: deliveryBatchId,
+          metadata: {
+            name: activeBatchName,
+            status: "Selesai",
+            delivery_verified: isVerified,
+            distance_meters: deliveryDistance
+          },
+        });
+      } catch (logErr) {
+        console.error("Gagal mencatat log aktivitas:", logErr);
+      }
+
+      showToast("Pengantaran berhasil diselesaikan dan diverifikasi!", "success");
+      setDeliveryBatchId(null);
+      await load();
+    } catch (err) {
+      console.error(err);
+      const errMsg = err instanceof Error ? err.message : String(err);
+      showToast("Gagal menyelesaikan pengantaran: " + errMsg, "error");
+    } finally {
+      setCompleting(null);
+    }
   }
+
 
   async function cancelClaim(batchId: string) {
     setCompleting(batchId);
@@ -986,13 +1075,14 @@ Mohon maaf atas ketidaknyamanannya. Mohon ditunggu update selanjutnya.`;
                           {/* If picked up but not delivered */}
                           {b.status === "Diambil" && (
                             <button
-                              onClick={() => setConfirmAction({ type: "deliver", batchId: b.id, name: b.name })}
+                              onClick={() => startDeliveryVerification(b.id)}
                               disabled={completing === b.id}
                               className="mt-1 text-[9px] font-bold text-[#2F6E4F] hover:underline"
                             >
                               Konfirmasi Antar
                             </button>
                           )}
+
                         </div>
                       </div>
                     </div>
@@ -1120,7 +1210,7 @@ Mohon maaf atas ketidaknyamanannya. Mohon ditunggu update selanjutnya.`;
                 const { type, batchId } = confirmAction;
                 setConfirmAction(null);
                 if (type === "pickup") markPickedUp(batchId);
-                else if (type === "deliver") markDelivered(batchId);
+                else if (type === "deliver") startDeliveryVerification(batchId);
                 else cancelClaim(batchId);
               }}
             >
@@ -1186,6 +1276,97 @@ Mohon maaf atas ketidaknyamanannya. Mohon ditunggu update selanjutnya.`;
               }}
             >
               Kirim via WhatsApp
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ===== Geofenced Delivery Modal ===== */}
+      <Modal
+        isOpen={deliveryBatchId !== null}
+        onClose={() => setDeliveryBatchId(null)}
+        title="Konfirmasi Pengantaran Pangan"
+        size="sm"
+      >
+        <div className="space-y-4 font-sans text-[#5B655D]">
+          <p className="text-xs leading-relaxed">
+            Untuk menyelesaikan distribusi makanan ke penerima manfaat, silakan unggah foto proses serah terima dan verifikasi lokasi GPS Anda:
+          </p>
+
+          {/* GPS Verification Status */}
+          <div className="p-3.5 rounded-[12px] border border-[#E4F0E8] bg-[#F4F6F3] space-y-1.5">
+            <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Verifikasi Lokasi GPS</span>
+            {deliveryGpsLoading ? (
+              <div className="flex items-center gap-2 text-xs text-[#5B655D]">
+                <div className="w-3.5 h-3.5 border-2 border-[#2F6E4F] border-t-transparent rounded-full animate-spin" />
+                <span>Mendeteksi koordinat GPS Anda...</span>
+              </div>
+            ) : deliveryDistance !== null ? (
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  {deliveryDistance <= 150 ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#3AA65A]">
+                      ✓ Lokasi Terverifikasi (Berjarak {Math.round(deliveryDistance)}m)
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#D4A373]">
+                      ⚠ Di luar Radius Asli ({Math.round(deliveryDistance)}m dari tujuan)
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] text-[#9AA39C] leading-normal">
+                  {deliveryDistance <= 150 
+                    ? "Anda terdeteksi berada di lokasi drop-off yang tepat." 
+                    : "Anda terdeteksi berada di luar batas 150 meter. Anda tetap bisa menyelesaikan jika terjadi kendala keakuratan GPS."}
+                </p>
+              </div>
+            ) : (
+              <span className="text-xs text-[#D14343] font-medium">Gagal mendeteksi lokasi GPS. Harap izinkan akses lokasi browser Anda.</span>
+            )}
+          </div>
+
+          {/* Photo Upload Input */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-[#1B1F1C] block">Foto Penyerahan Makanan <span className="text-[#D14343]">*</span></label>
+            {deliveryPhotoPreview && (
+              <div className="w-full h-36 rounded-[12px] border border-[#E4F0E8] overflow-hidden bg-[#F4F6F3] relative flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={deliveryPhotoPreview} alt="Drop-off Preview" className="w-full h-full object-cover" />
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              required
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setDeliveryPhotoFile(file);
+                  setDeliveryPhotoPreview(URL.createObjectURL(file));
+                }
+              }}
+              className="block w-full text-xs text-[#5B655D] file:mr-4 file:py-1.5 file:px-3 file:rounded-[6px] file:border-0 file:text-xs file:font-semibold file:bg-[#E4F0E8] file:text-[#2F6E4F] hover:file:bg-[#d0e5d7] cursor-pointer"
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#E4F0E8]">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[#9AA39C] text-[#5B655D] hover:bg-[#F4F6F3]"
+              onClick={() => setDeliveryBatchId(null)}
+              disabled={!!completing}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={submitDeliveryConfirm}
+              isLoading={!!completing}
+              disabled={!deliveryPhotoFile || deliveryGpsLoading}
+            >
+              Selesaikan Drop-off
             </Button>
           </div>
         </div>

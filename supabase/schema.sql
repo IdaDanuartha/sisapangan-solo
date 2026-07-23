@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS profiles (
 
 -- Migration: add is_verified if it doesn't exist yet (safe to run on existing databases)
 ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS ktp_url TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS verification_document_url TEXT;
+
 
 -- RLS
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -116,6 +119,11 @@ CREATE TABLE IF NOT EXISTS surplus_batch (
 
 -- Migration: add volunteer_id if it doesn't exist yet (safe to run on existing databases)
 ALTER TABLE surplus_batch ADD COLUMN IF NOT EXISTS volunteer_id UUID REFERENCES profiles(id) ON DELETE SET NULL;
+ALTER TABLE surplus_batch ADD COLUMN IF NOT EXISTS delivery_photo_url TEXT;
+ALTER TABLE surplus_batch ADD COLUMN IF NOT EXISTS delivery_lat DOUBLE PRECISION;
+ALTER TABLE surplus_batch ADD COLUMN IF NOT EXISTS delivery_lng DOUBLE PRECISION;
+ALTER TABLE surplus_batch ADD COLUMN IF NOT EXISTS delivery_verified BOOLEAN DEFAULT FALSE;
+
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS surplus_batch_donor_id_idx ON surplus_batch(donor_id);
@@ -295,6 +303,31 @@ CREATE POLICY "Owner Delete Access" ON storage.objects
     bucket_id = 'surplus-photos' AND 
     (auth.uid()::text = (storage.foldername(name))[1])
   );
+
+-- 5. Create bucket for verification documents (private)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('verification-documents', 'verification-documents', false)
+ON CONFLICT (id) DO NOTHING;
+
+-- 6. Allow authenticated users to read/upload their own verification documents
+CREATE POLICY "Users can read own verification files" ON storage.objects
+  FOR SELECT USING (
+    bucket_id = 'verification-documents' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+CREATE POLICY "Users can upload own verification files" ON storage.objects
+  FOR INSERT WITH CHECK (
+    bucket_id = 'verification-documents' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+CREATE POLICY "Admins can read all verification files" ON storage.objects
+  FOR SELECT USING (
+    bucket_id = 'verification-documents' AND
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'admin'
+  );
+
 
 -- =====================================================
 -- SAMPLE DATA (Demo / Presentation)

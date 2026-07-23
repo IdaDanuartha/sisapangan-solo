@@ -20,6 +20,9 @@ interface UserProfile {
   whatsapp_opt_in: boolean;
   location_lat?: number | null;
   location_lng?: number | null;
+  is_verified?: boolean;
+  ktp_url?: string | null;
+  verification_document_url?: string | null;
 }
 
 const donorTypeOptions = [
@@ -85,6 +88,10 @@ export default function ProfilePage() {
   const [lngInput, setLngInput] = useState("");
   const [isLocating, setIsLocating] = useState(false);
 
+  // Verification document previews
+  const [ktpPreviewUrl, setKtpPreviewUrl] = useState("");
+  const [docPreviewUrl, setDocPreviewUrl] = useState("");
+
   // Map refs
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const leafletMapRef = useRef<L.Map | null>(null);
@@ -121,7 +128,28 @@ export default function ProfilePage() {
           whatsapp_opt_in: data.whatsapp_opt_in ?? true,
           location_lat: data.location_lat ?? null,
           location_lng: data.location_lng ?? null,
+          is_verified: data.is_verified ?? false,
+          ktp_url: data.ktp_url ?? null,
+          verification_document_url: data.verification_document_url ?? null,
         });
+
+        // Load signed URLs for document previews
+        if (data.ktp_url) {
+          supabase.storage
+            .from("verification-documents")
+            .createSignedUrl(data.ktp_url, 3600)
+            .then(({ data: signedData }) => {
+              if (signedData) setKtpPreviewUrl(signedData.signedUrl);
+            });
+        }
+        if (data.verification_document_url) {
+          supabase.storage
+            .from("verification-documents")
+            .createSignedUrl(data.verification_document_url, 3600)
+            .then(({ data: signedData }) => {
+              if (signedData) setDocPreviewUrl(signedData.signedUrl);
+            });
+        }
       }
       setLoading(false);
     }
@@ -279,6 +307,55 @@ export default function ProfilePage() {
     );
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "ktp" | "doc") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    showToast("Mengunggah berkas...", "info");
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${type}_${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("verification-documents")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Update state path
+      if (type === "ktp") {
+        setProfile((prev) => prev ? { ...prev, ktp_url: filePath } : null);
+      } else {
+        setProfile((prev) => prev ? { ...prev, verification_document_url: filePath } : null);
+      }
+
+      // Generate signed URL for preview
+      const { data: signedData, error: signedError } = await supabase.storage
+        .from("verification-documents")
+        .createSignedUrl(filePath, 3600);
+
+      if (signedError) throw signedError;
+
+      if (type === "ktp") {
+        setKtpPreviewUrl(signedData.signedUrl);
+      } else {
+        setDocPreviewUrl(signedData.signedUrl);
+      }
+
+      showToast("Berkas berhasil diunggah! Ingat untuk menyimpan perubahan profil.", "success");
+    } catch (err) {
+      console.error(err);
+      const errMsg = err instanceof Error ? err.message : String(err);
+      showToast("Gagal mengunggah berkas: " + errMsg, "error");
+    }
+  };
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!profile) return;
@@ -306,11 +383,13 @@ export default function ProfilePage() {
         whatsapp_opt_in: profile.whatsapp_opt_in,
         location_lat: profile.location_lat,
         location_lng: profile.location_lng,
+        ktp_url: profile.ktp_url,
+        verification_document_url: profile.verification_document_url,
       })
       .eq("id", user.id);
 
     if (error) {
-      showToast("Gagal menyimpan profil.", "error");
+      showToast("Gagal menyimpan profil: " + error.message, "error");
     } else {
       await supabase.auth.updateUser({
         data: {
@@ -322,6 +401,8 @@ export default function ProfilePage() {
           whatsapp_opt_in: profile.whatsapp_opt_in,
           location_lat: profile.location_lat,
           location_lng: profile.location_lng,
+          ktp_url: profile.ktp_url,
+          verification_document_url: profile.verification_document_url,
         },
       });
       showToast("Profil berhasil diperbarui!", "success");
@@ -340,6 +421,7 @@ export default function ProfilePage() {
     }
     setSaving(false);
   }
+
 
   if (loading) {
     return (
@@ -495,7 +577,93 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {["volunteer", "non-consumption"].includes(profile.role) && (
+          <div className="border-t border-[#F4F6F3] pt-4 space-y-4">
+            <h3 className="text-sm font-bold text-[#1B1F1C]">Verifikasi Dokumen Akun</h3>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[#5B655D] font-medium">Status Verifikasi:</span>
+              {profile.is_verified ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#E4F0E8] text-[#2F6E4F]">
+                  ✓ Akun Terverifikasi
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#FFF9E6] text-[#D4A373]">
+                  ⚠ Menunggu Verifikasi Admin
+                </span>
+              )}
+            </div>
+
+            {!profile.is_verified && (
+              <div className="p-3 bg-[#F4F6F3] rounded-[12px] border border-[#E4F0E8]">
+                <p className="text-[11px] text-[#5B655D] leading-relaxed">
+                  Silakan unggah dokumen persyaratan di bawah. Admin akan meninjau berkas Anda sebelum mengaktifkan akun untuk berpartisipasi penuh dalam penyelamatan pangan.
+                </p>
+              </div>
+            )}
+
+            {/* KTP File Upload */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#1B1F1C] block">
+                Foto KTP (Kartu Tanda Penduduk) <span className="text-[#D14343]">*</span>
+              </label>
+              {ktpPreviewUrl && (
+                <div className="w-full max-w-[200px] h-32 rounded-[12px] border border-[#E4F0E8] overflow-hidden relative bg-[#F4F6F3] flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={ktpPreviewUrl} alt="KTP Preview" className="w-full h-full object-cover" />
+                </div>
+              )}
+              {!profile.is_verified ? (
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => handleFileUpload(e, "ktp")}
+                  className="block w-full text-xs text-[#5B655D] file:mr-4 file:py-1.5 file:px-3 file:rounded-[6px] file:border-0 file:text-xs file:font-semibold file:bg-[#E4F0E8] file:text-[#2F6E4F] hover:file:bg-[#d0e5d7] cursor-pointer"
+                />
+              ) : (
+                <p className="text-[11px] text-[#9AA39C] italic">Berkas dikunci (Akun sudah terverifikasi)</p>
+              )}
+            </div>
+
+            {/* Verification Document Upload */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#1B1F1C] block">
+                {profile.role === "non-consumption"
+                  ? "Bukti Lahan Ternak / Maggot / Kompos"
+                  : "Bukti Anggota / Keterangan Komunitas"}{" "}
+                <span className="text-[#D14343]">*</span>
+              </label>
+              {docPreviewUrl && (
+                <div className="w-full max-w-[200px] h-32 rounded-[12px] border border-[#E4F0E8] overflow-hidden relative bg-[#F4F6F3] flex items-center justify-center">
+                  {docPreviewUrl.toLowerCase().includes(".pdf") || (docPreviewUrl.includes("sign/verification-documents") && !docPreviewUrl.match(/\.(jpg|jpeg|png|webp|gif)/i)) ? (
+                    <div className="text-center p-2">
+                      <span className="text-[11px] text-[#2F6E4F] font-bold block">Dokumen Diunggah</span>
+                      <a href={docPreviewUrl} target="_blank" rel="noreferrer" className="text-[10px] text-blue-500 hover:underline">
+                        Buka File ↗
+                      </a>
+                    </div>
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={docPreviewUrl} alt="Document Preview" className="w-full h-full object-cover" />
+                  )}
+                </div>
+              )}
+              {!profile.is_verified ? (
+                <input
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => handleFileUpload(e, "doc")}
+                  className="block w-full text-xs text-[#5B655D] file:mr-4 file:py-1.5 file:px-3 file:rounded-[6px] file:border-0 file:text-xs file:font-semibold file:bg-[#E4F0E8] file:text-[#2F6E4F] hover:file:bg-[#d0e5d7] cursor-pointer"
+                />
+              ) : (
+                <p className="text-[11px] text-[#9AA39C] italic">Berkas dikunci (Akun sudah terverifikasi)</p>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="border-t border-[#F4F6F3] pt-4">
+
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
