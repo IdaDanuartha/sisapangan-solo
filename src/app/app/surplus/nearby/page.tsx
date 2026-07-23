@@ -1053,11 +1053,6 @@ export default function NearbySurplusPage() {
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-1.5 flex items-center">
-                <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
             </div>
 
             <div className="relative w-full">
@@ -1072,11 +1067,6 @@ export default function NearbySurplusPage() {
                 <option value={20}>20 km</option>
                 <option value={99999}>Semua</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-1.5 flex items-center">
-                <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
             </div>
 
             <div className="relative w-full">
@@ -1089,11 +1079,6 @@ export default function NearbySurplusPage() {
                 <option value="safe">Layak</option>
                 <option value="urgent">Mendesak</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-1.5 flex items-center">
-                <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
             </div>
           </div>
 
@@ -1410,7 +1395,7 @@ export default function NearbySurplusPage() {
                     className="w-10 h-10 rounded-[8px] border border-[#9AA39C] bg-white p-0 flex items-center justify-center"
                   >
                     <Heart
-                      size={16}
+                      size={24}
                       className={favorites[selectedBatch.id] ? "fill-red-500 stroke-red-500" : "text-[#5B655D]"}
                     />
                   </Button>
