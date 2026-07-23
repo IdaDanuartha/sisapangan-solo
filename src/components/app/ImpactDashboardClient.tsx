@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   Package,
@@ -15,6 +15,7 @@ import {
   MapPin,
   Clock,
   ChevronRight,
+  ChevronLeft,
   ShieldCheck,
   RotateCcw
 } from "lucide-react";
@@ -188,6 +189,10 @@ export function ImpactDashboardClient({
   const [categoryFilter, setCategoryFilter] = useState<string>("semua");
   const [statusFilter, setStatusFilter] = useState<string>("semua");
 
+  // Pagination States
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(5);
+
   // Filtered Batches computation
   const filteredBatches = useMemo(() => {
     return initialBatches.filter((b) => {
@@ -226,6 +231,18 @@ export function ImpactDashboardClient({
       return true;
     });
   }, [initialBatches, timeFilter, regionFilter, priorityFilter, categoryFilter, statusFilter]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [timeFilter, regionFilter, priorityFilter, categoryFilter, statusFilter, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredBatches.length / itemsPerPage);
+
+  const paginatedBatches = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredBatches.slice(start, start + itemsPerPage);
+  }, [filteredBatches, currentPage, itemsPerPage]);
 
   // Compute live metrics from filtered batches
   const computedMetrics = useMemo(() => {
@@ -320,6 +337,7 @@ export function ImpactDashboardClient({
     setPriorityFilter("semua");
     setCategoryFilter("semua");
     setStatusFilter("semua");
+    setCurrentPage(1);
   };
 
   return (
@@ -558,7 +576,7 @@ export function ImpactDashboardClient({
                   </td>
                 </tr>
               ) : (
-                filteredBatches.map((b) => {
+                paginatedBatches.map((b) => {
                   const expiryFormatted = new Date(b.estimated_expiry).toLocaleString("id-ID", {
                     day: "numeric",
                     month: "short",
@@ -623,6 +641,70 @@ export function ImpactDashboardClient({
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {filteredBatches.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#F4F6F3] text-xs text-[#5B655D]">
+            <div className="flex items-center gap-3">
+              <p>
+                Menampilkan <strong className="font-bold text-[#1B1F1C]">{(currentPage - 1) * itemsPerPage + 1}</strong> - <strong className="font-bold text-[#1B1F1C]">{Math.min(currentPage * itemsPerPage, filteredBatches.length)}</strong> dari <strong className="font-bold text-[#1B1F1C]">{filteredBatches.length}</strong> item
+              </p>
+              <div className="flex items-center gap-1">
+                <span className="text-[11px] text-[#9AA39C]">Tampilkan:</span>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  className="h-7 px-2 rounded-[6px] text-xs font-semibold bg-[#F4F6F3] border border-[#E4F0E8] text-[#1B1F1C] focus:outline-none cursor-pointer"
+                >
+                  <option value={5}>5 baris</option>
+                  <option value={10}>10 baris</option>
+                  <option value={20}>20 baris</option>
+                  <option value={50}>50 baris</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                className="h-8 px-2.5 text-xs border border-[#E4F0E8] text-[#5B655D] hover:bg-[#F4F6F3] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft size={14} className="mr-1" />
+                Sebelumnya
+              </Button>
+
+              <div className="flex items-center gap-1 px-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-7 h-7 rounded-[6px] text-xs font-bold transition-all cursor-pointer ${
+                      currentPage === pageNum
+                        ? "bg-[#2F6E4F] text-white shadow-xs"
+                        : "text-[#5B655D] hover:bg-[#F4F6F3]"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+              </div>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                className="h-8 px-2.5 text-xs border border-[#E4F0E8] text-[#5B655D] hover:bg-[#F4F6F3] disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Selanjutnya
+                <ChevronRight size={14} className="ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
