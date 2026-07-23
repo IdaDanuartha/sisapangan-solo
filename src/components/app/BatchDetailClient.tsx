@@ -719,16 +719,36 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
 
       {/* Actions */}
       <div className="space-y-2">
-        {canClaim && (
+        {currentBatch.status === "Tersedia" && (
           <Button
             variant="primary"
             size="lg"
             className="w-full"
-            onClick={handleClaim}
+            onClick={
+              !currentUserId
+                ? () => {
+                    showToast("Silakan masuk sebagai Relawan terlebih dahulu untuk mengklaim.", "warning");
+                    router.push("/login");
+                  }
+                : currentUserRole !== "volunteer" && currentUserRole !== "non-consumption"
+                ? undefined
+                : !isVerified
+                ? () => showToast("Akun Anda sedang menunggu verifikasi admin sebelum dapat mengklaim donasi.", "warning")
+                : handleClaim
+            }
+            disabled={
+              currentUserId ? (currentUserRole !== "volunteer" && currentUserRole !== "non-consumption") || !isVerified : false
+            }
             isLoading={isUpdating}
             id="btn-claim"
           >
-            Klaim Surplus Ini
+            {!currentUserId
+              ? "Masuk untuk Klaim"
+              : currentUserRole !== "volunteer" && currentUserRole !== "non-consumption"
+              ? "Hanya untuk Akun Relawan"
+              : !isVerified
+              ? "Menunggu Verifikasi Admin"
+              : "Klaim Surplus Ini"}
           </Button>
         )}
         {canUpdateStatus && (

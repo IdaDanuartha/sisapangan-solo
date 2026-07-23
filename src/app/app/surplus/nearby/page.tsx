@@ -291,7 +291,7 @@ export default function NearbySurplusPage() {
 
   // Leaflet Map Init
   useEffect(() => {
-    if ((isMobile && view !== "map") || !mapRef.current || userLat === null) return;
+    if (loading || (isMobile && view !== "map") || !mapRef.current || userLat === null) return;
 
     // If already initialised (e.g. tab switch), just refresh tile sizes
     if (leafletMapRef.current) {
@@ -345,7 +345,7 @@ export default function NearbySurplusPage() {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, userLat, userLng, isMobile, !!selectedBatch, mapKey]);
+  }, [view, userLat, userLng, isMobile, !!selectedBatch, mapKey, loading]);
 
   // Safety-net: invalidate map size whenever the panel finishes re-rendering
   useEffect(() => {
@@ -1239,7 +1239,7 @@ export default function NearbySurplusPage() {
         <div className="space-y-4">
           {/* Detailed Info Card */}
           <div className="bg-white rounded-[20px] shadow-sm p-5 border border-[#E4F0E8] space-y-4">
-            {loading ? (
+            {loading && !selectedBatch ? (
               /* Right panel skeleton */
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -1334,6 +1334,12 @@ export default function NearbySurplusPage() {
 
                 {/* Actions row */}
                 <div className="flex gap-2 pt-2">
+                  <Link
+                    href={`/app/surplus/${selectedBatch.id}`}
+                    className="flex-1 h-10 border border-[#2F6E4F] hover:bg-[#E4F0E8]/50 text-[#2F6E4F] text-xs font-bold rounded-[8px] flex items-center justify-center transition-colors"
+                  >
+                    Lihat Detail
+                  </Link>
                   <Button
                     onClick={() => selectedBatch && startClaimFlow(selectedBatch)}
                     disabled={isUpdating}
