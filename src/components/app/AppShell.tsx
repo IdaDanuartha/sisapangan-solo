@@ -24,6 +24,7 @@ import {
   HelpCircle,
   Package,
   Users,
+  Activity
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Modal } from "@/components/ui/Modal";
@@ -64,6 +65,7 @@ const navByRole: Record<Role, NavItem[]> = {
     { href: "/app/dashboard", label: "Dashboard Ringkasan", icon: LayoutDashboard },
     { href: "/app/impact", label: "Dashboard Dampak", icon: BarChart3 },
     { href: "/app/surplus/nearby", label: "Data Surplus", icon: MapPin },
+    { href: "/app/monitoring", label: "Monitoring Aktivitas", icon: Activity },
     { href: "/app/profile", label: "Profil", icon: User },
   ],
   admin: [
@@ -73,6 +75,7 @@ const navByRole: Record<Role, NavItem[]> = {
     { href: "/app/drop-off", label: "Manajemen Drop-off", icon: Map },
     { href: "/app/surplus/nearby", label: "Lihat Semua Surplus", icon: MapPin },
     { href: "/app/history", label: "Riwayat", icon: History },
+    { href: "/app/monitoring", label: "Monitoring Aktivitas", icon: Activity },
     { href: "/app/profile", label: "Profil", icon: User },
   ],
 };
