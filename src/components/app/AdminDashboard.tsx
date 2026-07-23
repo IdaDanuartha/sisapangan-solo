@@ -714,7 +714,7 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
           </div>
 
           <div className="relative pt-2">
-            <svg viewBox="0 0 1000 200" className="w-full h-auto overflow-visible">
+            <svg viewBox="0 0 1000 200" className="w-full h-auto overflow-visible" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="greenGrad2" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#2F6E4F" stopOpacity="0.2" />
@@ -742,14 +742,32 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
               ))}
             </svg>
           </div>
-          <div className="flex justify-between text-[10px] font-semibold text-[#9AA39C] px-2">
+          <div className="relative h-6 text-[10px] font-semibold text-[#9AA39C]">
             {currentChart.greenDots.map((dot: AdminChartDot, idx: number) => (
-              <span key={idx}>{dot.label}</span>
+              <span
+                key={idx}
+                className="absolute truncate whitespace-nowrap"
+                style={{
+                  left: `${(dot.cx / 1000) * 100}%`,
+                  transform: "translateX(-50%)",
+                }}
+              >
+                {dot.label}
+              </span>
             ))}
           </div>
-          <div className="flex justify-between text-[10px] font-semibold text-[#E88C2D] px-2 border-t border-dashed border-[#F4F6F3] pt-1 mt-1">
+          <div className="relative h-6 text-[10px] font-semibold text-[#E88C2D] border-t border-dashed border-[#F4F6F3] pt-1 mt-1">
             {currentChart.orangeDots.map((dot: AdminChartDot, idx: number) => (
-              <span key={idx}>{dot.label}</span>
+              <span
+                key={idx}
+                className="absolute truncate whitespace-nowrap"
+                style={{
+                  left: `${(dot.cx / 1000) * 100}%`,
+                  transform: "translateX(-50%)",
+                }}
+              >
+                {dot.label}
+              </span>
             ))}
           </div>
           <div className="flex gap-4 text-xs font-semibold pt-2 border-t border-[#F4F6F3]">
@@ -788,7 +806,7 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
               <h2 className="text-sm font-bold text-[#1B1F1C]">Tren Makanan Terselamatkan (kg)</h2>
             </div>
             <div className="relative pt-4 flex-1 flex flex-col justify-center">
-              <svg viewBox="0 0 1000 200" className="w-full h-auto overflow-visible">
+              <svg viewBox="0 0 1000 200" className="w-full h-auto overflow-visible" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#2F6E4F" stopOpacity="0.1" />
@@ -834,14 +852,19 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
                 ))}
               </svg>
 
-              <div className="flex justify-between mt-3 px-1 text-[9px] text-[#9AA39C] font-semibold">
-                <span>1 Jun</span>
-                <span>2 Jun</span>
-                <span>3 Jun</span>
-                <span>4 Jun</span>
-                <span>5 Jun</span>
-                <span>6 Jun</span>
-                <span>7 Jun</span>
+              <div className="relative h-6 mt-3 text-[9px] text-[#9AA39C] font-semibold">
+                {currentChart.greenDots.map((dot, idx) => (
+                  <span
+                    key={idx}
+                    className="absolute truncate whitespace-nowrap"
+                    style={{
+                      left: `${(dot.cx / 1000) * 100}%`,
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    {dot.label.split(" (")[0]}
+                  </span>
+                ))}
               </div>
             </div>
           </div>

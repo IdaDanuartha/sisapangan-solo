@@ -299,7 +299,7 @@ export function DonorDashboard({ userId }: { userId: string }) {
               fill: #1B1F1C !important;
             }
           `}</style>
-          <svg className="w-full h-full" viewBox="0 0 500 150">
+          <svg className="w-full h-full" viewBox="0 0 500 150" preserveAspectRatio="none">
             <defs>
               <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#2F6E4F" stopOpacity="0.25" />
@@ -342,9 +342,18 @@ export function DonorDashboard({ userId }: { userId: string }) {
             ))}
           </svg>
         </div>
-        <div className="flex flex-wrap justify-between text-[9px] sm:text-[10px] font-semibold text-[#9AA39C] mt-2 px-1 gap-y-1">
+        <div className="relative h-6 mt-3 text-[9px] sm:text-[10px] font-semibold text-[#9AA39C]">
           {currentChart.dots.map((dot, idx) => (
-            <span key={idx} className="truncate">{dot.label}</span>
+            <span
+              key={idx}
+              className="absolute truncate whitespace-nowrap"
+              style={{
+                left: `${(dot.cx / 500) * 100}%`,
+                transform: "translateX(-50%)",
+              }}
+            >
+              {dot.label}
+            </span>
           ))}
         </div>
       </div>
