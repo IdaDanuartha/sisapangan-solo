@@ -123,9 +123,11 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
       }
 
       if (mapRef.current && mapRef.current.classList.contains("leaflet-container")) {
-        console.warn("Mini map container already initialized.");
-        return;
+        // If container has leaflet class but we don't have a ref, clean it up to re-initialize safely
+        mapRef.current.innerHTML = "";
+        mapRef.current.className = "w-full h-full";
       }
+
 
       const map = L.map(mapRef.current!, {
         center: [lat, lng],
@@ -175,10 +177,17 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
     const lng = firstBatch?.location_lng || 110.8243;
 
     const timer = setTimeout(async () => {
-      if (!mapFullRef.current || leafletFullMapRef.current) return;
+      if (!mapFullRef.current) return;
+      if (leafletFullMapRef.current) return;
+
+      if (mapFullRef.current.classList.contains("leaflet-container")) {
+        mapFullRef.current.innerHTML = "";
+        mapFullRef.current.className = "w-full h-full absolute inset-0";
+      }
 
       const L = (await import("leaflet")).default;
       const map = L.map(mapFullRef.current, {
+
         center: [lat, lng],
         zoom: 13,
       });
@@ -550,9 +559,10 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
                       onClick={() => setCurrentPage(page)}
                       className={`w-7 h-7 rounded-[8px] text-xs font-semibold ${
                         currentPage === page
-                          ? "bg-[#1B1F1C] text-white"
+                          ? "bg-[#2F6E4F] text-white"
                           : "text-[#5B655D] hover:bg-[#F4F6F3]"
                       }`}
+
                     >
                       {page}
                     </button>

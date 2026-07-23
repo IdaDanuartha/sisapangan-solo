@@ -78,9 +78,11 @@ export function DropOffManagementClient() {
       if (!active) return;
 
       if (selectMapRef.current && selectMapRef.current.classList.contains("leaflet-container")) {
-        console.warn("Select map container already initialized.");
-        return;
+        // If container has leaflet class but we don't have a ref, clean it up to re-initialize safely
+        selectMapRef.current.innerHTML = "";
+        selectMapRef.current.className = "w-full h-full";
       }
+
       
       const defaultLat = -7.5672;
       const defaultLng = 110.8120;

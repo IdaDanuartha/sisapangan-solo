@@ -72,7 +72,7 @@ const navByRole: Record<Role, NavItem[]> = {
     { href: "/app/users", label: "Kelola Pengguna", icon: Users },
     { href: "/app/drop-off", label: "Manajemen Drop-off", icon: Map },
     { href: "/app/surplus/nearby", label: "Lihat Semua Surplus", icon: MapPin },
-    { href: "/app/history", label: "Semua Transaksi", icon: History },
+    { href: "/app/history", label: "Riwayat", icon: History },
     { href: "/app/profile", label: "Profil", icon: User },
   ],
 };

@@ -362,7 +362,7 @@ export function SurplusManagementClient({ initialBatches, currentUserId, current
                     onClick={() => setCurrentPage(page)}
                     className={`w-7 h-7 rounded-[8px] text-xs font-semibold ${
                       currentPage === page
-                        ? "bg-[#1B1F1C] text-white"
+                        ? "bg-[#2F6E4F] text-white"
                         : "text-[#5B655D] hover:bg-[#F4F6F3]"
                     }`}
                   >
