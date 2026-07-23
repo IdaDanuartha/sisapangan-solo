@@ -38,46 +38,120 @@ interface NavItem {
   icon: React.ElementType;
 }
 
-const navByRole: Record<Role, NavItem[]> = {
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const navByRole: Record<Role, NavSection[]> = {
   donor: [
-    { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/app/surplus", label: "Data Surplus", icon: Package },
-    { href: "/app/surplus/recurring", label: "Surplus Rutin", icon: RefreshCcw },
-    { href: "/app/history", label: "Riwayat", icon: History },
-    // { href: "/app/badges", label: "Badge Saya", icon: Award },
-    { href: "/app/profile", label: "Profil", icon: User },
+    {
+      title: "Ringkasan",
+      items: [
+        { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard }
+      ]
+    },
+    {
+      title: "Donasi Pangan",
+      items: [
+        { href: "/app/surplus", label: "Data Surplus", icon: Package },
+        { href: "/app/surplus/recurring", label: "Surplus Rutin", icon: RefreshCcw }
+      ]
+    },
+    {
+      title: "Laporan",
+      items: [
+        { href: "/app/history", label: "Riwayat", icon: History }
+      ]
+    }
   ],
   volunteer: [
-    { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/app/surplus/nearby", label: "Surplus Terdekat", icon: MapPin },
-    { href: "/app/pickup/route", label: "Rute Pickup", icon: Route },
-    { href: "/app/history", label: "Riwayat", icon: History },
-    { href: "/app/profile", label: "Profil", icon: User },
+    {
+      title: "Ringkasan",
+      items: [
+        { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard }
+      ]
+    },
+    {
+      title: "Distribusi",
+      items: [
+        { href: "/app/surplus/nearby", label: "Surplus Terdekat", icon: MapPin },
+        { href: "/app/pickup/route", label: "Rute Pickup", icon: Route }
+      ]
+    },
+    {
+      title: "Laporan",
+      items: [
+        { href: "/app/history", label: "Riwayat", icon: History }
+      ]
+    }
   ],
   "non-consumption": [
-    { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/app/surplus/nearby", label: "Surplus Terdekat", icon: MapPin },
-    { href: "/app/pickup/route", label: "Rute Pickup", icon: Route },
-    { href: "/app/history", label: "Riwayat", icon: History },
-    { href: "/app/profile", label: "Profil", icon: User },
+    {
+      title: "Ringkasan",
+      items: [
+        { href: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard }
+      ]
+    },
+    {
+      title: "Distribusi",
+      items: [
+        { href: "/app/surplus/nearby", label: "Surplus Terdekat", icon: MapPin },
+        { href: "/app/pickup/route", label: "Rute Pickup", icon: Route }
+      ]
+    },
+    {
+      title: "Laporan",
+      items: [
+        { href: "/app/history", label: "Riwayat", icon: History }
+      ]
+    }
   ],
   monitor: [
-    { href: "/app/dashboard", label: "Dashboard Ringkasan", icon: LayoutDashboard },
-    { href: "/app/impact", label: "Dashboard Dampak", icon: BarChart3 },
-    { href: "/app/surplus/nearby", label: "Data Surplus", icon: MapPin },
-    { href: "/app/monitoring", label: "Monitoring Aktivitas", icon: Activity },
-    { href: "/app/profile", label: "Profil", icon: User },
+    {
+      title: "Ringkasan",
+      items: [
+        { href: "/app/dashboard", label: "Dashboard Ringkasan", icon: LayoutDashboard }
+      ]
+    },
+    {
+      title: "Analisis Dampak",
+      items: [
+        { href: "/app/impact", label: "Dashboard Dampak", icon: BarChart3 },
+        { href: "/app/surplus/nearby", label: "Data Surplus", icon: MapPin }
+      ]
+    },
+    {
+      title: "Keamanan & Audit",
+      items: [
+        { href: "/app/monitoring", label: "Monitoring Aktivitas", icon: Activity }
+      ]
+    }
   ],
   admin: [
-    { href: "/app/dashboard", label: "Dashboard Admin", icon: LayoutDashboard },
-    { href: "/app/impact", label: "Dashboard Dampak", icon: BarChart3 },
-    { href: "/app/users", label: "Kelola Pengguna", icon: Users },
-    { href: "/app/drop-off", label: "Manajemen Drop-off", icon: Map },
-    { href: "/app/surplus/nearby", label: "Lihat Semua Surplus", icon: MapPin },
-    { href: "/app/history", label: "Riwayat", icon: History },
-    { href: "/app/monitoring", label: "Monitoring Aktivitas", icon: Activity },
-    { href: "/app/profile", label: "Profil", icon: User },
-  ],
+    {
+      title: "Ringkasan",
+      items: [
+        { href: "/app/dashboard", label: "Dashboard Admin", icon: LayoutDashboard }
+      ]
+    },
+    {
+      title: "Kelola Platform",
+      items: [
+        { href: "/app/users", label: "Kelola Pengguna", icon: Users },
+        { href: "/app/drop-off", label: "Manajemen Drop-off", icon: Map },
+        { href: "/app/surplus/nearby", label: "Lihat Semua Surplus", icon: MapPin }
+      ]
+    },
+    {
+      title: "Aktivitas & Audit",
+      items: [
+        { href: "/app/history", label: "Riwayat", icon: History },
+        { href: "/app/impact", label: "Dashboard Dampak", icon: BarChart3 },
+        { href: "/app/monitoring", label: "Monitoring Aktivitas", icon: Activity }
+      ]
+    }
+  ]
 };
 
 // Bottom nav shows at most 5 items
@@ -169,7 +243,7 @@ export function AppShell({
       ? role
       : "donor";
 
-  const navItems = navByRole[resolvedRole].filter(item => item.href !== "/app/profile");
+  const sections = navByRole[resolvedRole];
   const bottomItems = bottomNavByRole[resolvedRole];
 
   const getIsActive = (href: string) => {
@@ -225,23 +299,39 @@ export function AppShell({
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto" aria-label="Navigasi aplikasi">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.href}
-              item={item}
-              isActive={getIsActive(item.href)}
-            />
+        <nav className="flex-1 px-2 py-3 space-y-5 overflow-y-auto" aria-label="Navigasi aplikasi">
+          {sections.map((section) => (
+            <div key={section.title} className="space-y-1.5">
+              <p className="px-3 text-[10px] font-bold text-[#9AA39C] uppercase tracking-wider">
+                {section.title}
+              </p>
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    item={item}
+                    isActive={getIsActive(item.href)}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
-          <hr className="my-2 border-[#E4F0E8]" />
-          <NavLink
-            item={{ href: "/app/profile", label: "Pengaturan", icon: Settings }}
-            isActive={pathname.startsWith("/app/profile")}
-          />
-          <NavLink
-            item={{ href: "/app/help", label: "Bantuan", icon: HelpCircle }}
-            isActive={pathname.startsWith("/app/help")}
-          />
+
+          <div className="space-y-1.5 border-t border-[#E4F0E8] pt-4">
+            <p className="px-3 text-[10px] font-bold text-[#9AA39C] uppercase tracking-wider">
+              Pengaturan & Bantuan
+            </p>
+            <div className="space-y-0.5">
+              <NavLink
+                item={{ href: "/app/profile", label: "Pengaturan", icon: Settings }}
+                isActive={pathname.startsWith("/app/profile")}
+              />
+              <NavLink
+                item={{ href: "/app/help", label: "Bantuan", icon: HelpCircle }}
+                isActive={pathname.startsWith("/app/help")}
+              />
+            </div>
+          </div>
         </nav>
 
         {/* Bottom actions */}
@@ -294,26 +384,42 @@ export function AppShell({
           <p className="text-sm font-semibold text-[#1B1F1C]">{userName}</p>
           <p className="text-xs text-[#9AA39C]">{roleLabels[resolvedRole]}</p>
         </div>
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.href}
-              item={item}
-              isActive={getIsActive(item.href)}
-              onClick={() => setSidebarOpen(false)}
-            />
+        <nav className="flex-1 px-2 py-3 space-y-5 overflow-y-auto">
+          {sections.map((section) => (
+            <div key={section.title} className="space-y-1.5">
+              <p className="px-3 text-[10px] font-bold text-[#9AA39C] uppercase tracking-wider">
+                {section.title}
+              </p>
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    item={item}
+                    isActive={getIsActive(item.href)}
+                    onClick={() => setSidebarOpen(false)}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
-          <hr className="my-2 border-[#E4F0E8]" />
-          <NavLink
-            item={{ href: "/app/profile", label: "Pengaturan", icon: Settings }}
-            isActive={pathname.startsWith("/app/profile")}
-            onClick={() => setSidebarOpen(false)}
-          />
-          <NavLink
-            item={{ href: "/app/help", label: "Bantuan", icon: HelpCircle }}
-            isActive={pathname.startsWith("/app/help")}
-            onClick={() => setSidebarOpen(false)}
-          />
+
+          <div className="space-y-1.5 border-t border-[#E4F0E8] pt-4">
+            <p className="px-3 text-[10px] font-bold text-[#9AA39C] uppercase tracking-wider">
+              Pengaturan & Bantuan
+            </p>
+            <div className="space-y-0.5">
+              <NavLink
+                item={{ href: "/app/profile", label: "Pengaturan", icon: Settings }}
+                isActive={pathname.startsWith("/app/profile")}
+                onClick={() => setSidebarOpen(false)}
+              />
+              <NavLink
+                item={{ href: "/app/help", label: "Bantuan", icon: HelpCircle }}
+                isActive={pathname.startsWith("/app/help")}
+                onClick={() => setSidebarOpen(false)}
+              />
+            </div>
+          </div>
         </nav>
         <div className="px-2 py-3 border-t border-[#F4F6F3]">
           <button
