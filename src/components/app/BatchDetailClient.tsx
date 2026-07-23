@@ -325,6 +325,13 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
 
       setCurrentBatch((prev) => ({ ...prev, status: "Diklaim", volunteer_id: currentUserId }));
       showToast("Surplus berhasil diklaim!", "success");
+
+      // Trigger claim notification via API
+      fetch("/api/surplus/claim/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ batchId: currentBatch.id, volunteerId: currentUserId }),
+      }).catch((err) => console.error("Gagal mengirim notifikasi klaim:", err));
     }
     setIsUpdating(false);
     setShowConfirmClaim(false);

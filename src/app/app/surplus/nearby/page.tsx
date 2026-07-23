@@ -824,7 +824,7 @@ export default function NearbySurplusPage() {
     const supabase = createClient();
     const { error } = await supabase
       .from("surplus_batch")
-      .update({ status: "Diklaim" })
+      .update({ status: "Diklaim", volunteer_id: user.id })
       .eq("id", batchToClaim.id);
 
     if (!error) {
@@ -851,6 +851,14 @@ export default function NearbySurplusPage() {
       }
       
       showToast("Surplus pangan berhasil diklaim!", "success");
+
+      // Trigger claim notification via API
+      fetch("/api/surplus/claim/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ batchId: batchToClaim.id, volunteerId: user.id }),
+      }).catch((err) => console.error("Gagal mengirim notifikasi klaim:", err));
+
       // Remove from active list
       setBatches(prev => prev.filter(b => b.id !== batchToClaim.id));
       setSelectedBatch(null);
