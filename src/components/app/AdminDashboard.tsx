@@ -634,16 +634,6 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
   const nonConsBatches = batches.filter((b) => b.freshness_status === "non-consumption");
   const availableBatches = batches.filter((b) => b.status === "Tersedia");
 
-  const dynamicAiSummary = `Rekomendasi Tindak Lanjut: ${
-    urgentBatches.length > 0
-      ? `🚨 Terdeteksi ${urgentBatches.length} batch surplus berstatus MENDESAK di Solo Raya! Direkomendasikan segera mengerahkan relawan penjemputan.`
-      : `✅ Semua ${availableBatches.length} batch surplus aktif berada dalam kondisi kesegaran aman.`
-  } ${
-    nonConsBatches.length > 0
-      ? `🌱 Terdapat ${nonConsBatches.length} batch non-konsumsi yang disarankan dialihkan ke mitra maggot/kompos Solo Raya.`
-      : ""
-  } Area kontribusi tertinggi berada di kawasan Pasar Gede dan Banjarsari. Rata-rata waktu rescue: 42 menit.`;
-
   // Activity Log metrics (Constraint 1)
   const startOfToday = new Date().setHours(0, 0, 0, 0);
   const logsToday = activityLogs.filter((l) => new Date(l.created_at).getTime() >= startOfToday);
@@ -678,13 +668,44 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
       </div>
 
       {/* AI Impact Summary Banner (Constraint 2: Rekomendasi Tindak Lanjut Dinamis) */}
-      <div className="bg-[#EBF5EE] border border-[#2F6E4F]/20 rounded-[16px] p-4 flex items-start gap-3 shadow-sm">
-        <Sparkles className="text-[#2F6E4F] shrink-0 mt-0.5 animate-pulse" size={18} />
-        <div>
-          <h4 className="text-xs font-bold text-[#2F6E4F]">Smart Impact AI & Rekomendasi Tindak Lanjut</h4>
-          <p className="text-xs text-[#5B655D] mt-1 leading-relaxed font-medium">
-            {dynamicAiSummary}
-          </p>
+      <div className="bg-[#EBF5EE] border border-[#2F6E4F]/20 rounded-[16px] p-4.5 flex items-start gap-3.5 shadow-xs">
+        <Sparkles className="text-[#2F6E4F] shrink-0 mt-0.5 animate-pulse" size={20} />
+        <div className="flex-1 space-y-2">
+          <h4 className="text-xs font-bold text-[#2F6E4F] uppercase tracking-wider">Smart Impact AI & Rekomendasi Tindak Lanjut</h4>
+          
+          <div className="text-xs text-[#5B655D] leading-relaxed font-medium space-y-1.5 pt-0.5">
+            {urgentBatches.length > 0 ? (
+              <div className="flex items-center gap-2 text-[#991B1B]">
+                <AlertTriangle size={15} className="shrink-0 text-[#D14343]" />
+                <span>
+                  Terdeteksi <strong className="font-bold">{urgentBatches.length} batch surplus</strong> berstatus <strong className="font-bold text-[#D14343] uppercase">Mendesak</strong> di Solo Raya! Direkomendasikan segera mengerahkan relawan penjemputan.
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-[#2F6E4F]">
+                <CheckCircle2 size={15} className="shrink-0 text-[#2F6E4F]" />
+                <span>
+                  Semua <strong className="font-bold">{availableBatches.length} batch surplus aktif</strong> berada dalam kondisi kesegaran aman.
+                </span>
+              </div>
+            )}
+
+            {nonConsBatches.length > 0 && (
+              <div className="flex items-center gap-2 text-[#854D0E]">
+                <Sprout size={15} className="shrink-0 text-[#E88C2D]" />
+                <span>
+                  Terdapat <strong className="font-bold">{nonConsBatches.length} batch non-konsumsi</strong> yang disarankan dialihkan ke mitra maggot/kompos Solo Raya.
+                </span>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 text-[#5B655D]">
+              <Activity size={15} className="shrink-0 text-[#2F6E4F]" />
+              <span>
+                Area kontribusi tertinggi berada di kawasan <strong className="font-bold text-[#1B1F1C]">Pasar Gede</strong> dan <strong className="font-bold text-[#1B1F1C]">Banjarsari</strong>. Rata-rata waktu rescue: <strong className="font-bold text-[#2F6E4F]">42 menit</strong>.
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

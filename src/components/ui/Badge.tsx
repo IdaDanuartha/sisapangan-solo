@@ -43,7 +43,12 @@ const statusConfig: Record<
 
 /** Status Badge — food safety / freshness status. Used consistently everywhere. */
 export function StatusBadge({ status, className = "" }: StatusBadgeProps) {
-  const config = statusConfig[status];
+  const config = statusConfig[status] || {
+    bg: "bg-[#F4F6F3]",
+    text: "text-[#5B655D]",
+    border: "border-[#9AA39C]",
+    label: status || "Status",
+  };
   return (
     <span
       role="status"
@@ -118,7 +123,7 @@ export function DistributionBadge({
   status: DistributionStatus;
   className?: string;
 }) {
-  const config = distributionConfig[status];
+  const config = distributionConfig[status] || { bg: "bg-[#F4F6F3]", text: "text-[#5B655D]" };
   return (
     <span
       className={[
@@ -128,7 +133,7 @@ export function DistributionBadge({
         className,
       ].join(" ")}
     >
-      {status}
+      {status || "Tersedia"}
     </span>
   );
 }

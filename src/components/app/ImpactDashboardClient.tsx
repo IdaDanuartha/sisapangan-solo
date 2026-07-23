@@ -19,7 +19,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { MetricCard } from "@/components/ui/Card";
-import { StatusBadge } from "@/components/ui/Badge";
+import { StatusBadge, DistributionBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
 export interface SurplusBatchItem {
@@ -69,9 +69,9 @@ const WILAYAH_SOLO = [
 
 const PRIORITAS_LIST = [
   { value: "semua", label: "Semua Prioritas" },
-  { value: "urgent", label: "🔴 Mendesak (Urgent)" },
-  { value: "safe", label: "🟢 Layak (Safe)" },
-  { value: "non-consumption", label: "🟡 Non-Konsumsi (Pakan/Kompos)" },
+  { value: "urgent", label: "Mendesak (Urgent)" },
+  { value: "safe", label: "Layak (Safe)" },
+  { value: "non-consumption", label: "Non-Konsumsi (Pakan/Kompos)" },
 ];
 
 function SimpleBarChart({ data }: { data: Record<string, number> }) {
@@ -279,23 +279,38 @@ export function ImpactDashboardClient({
     if (urgentItems.length > 0) {
       return {
         type: "urgent",
-        title: "🚨 Tindak Lanjut Mendesak: Pengerahan Relawan",
-        message: `Terdeteksi ${urgentItems.length} item berstatus MENDESAK (${urgentItems.map(i => i.name).slice(0, 2).join(", ")}). Disarankan tim relawan segera memprioritaskan penjemputan dalam 1-2 jam ke depan.`
+        title: "Tindak Lanjut Mendesak: Pengerahan Relawan",
+        icon: <AlertTriangle size={18} className="shrink-0 text-[#D14343]" />,
+        content: (
+          <span>
+            Terdeteksi <strong className="font-bold text-[#D14343]">{urgentItems.length} item</strong> berstatus <strong className="font-bold uppercase text-[#D14343]">Mendesak</strong> ({urgentItems.map((i) => i.name).slice(0, 2).map((n, idx) => <strong key={idx} className="font-bold text-[#1B1F1C]">"{n}"{idx < Math.min(urgentItems.length, 2) - 1 ? ", " : ""}</strong>)}). Disarankan tim relawan segera memprioritaskan penjemputan dalam <strong className="font-bold text-[#D14343]">1-2 jam ke depan</strong>.
+          </span>
+        )
       };
     }
 
     if (nonConsItems.length > 0) {
       return {
         type: "non-consumption",
-        title: "🌱 Tindak Lanjut Non-Konsumsi: Mitrasi Pakan & Kompos",
-        message: `Terdapat ${nonConsItems.length} item surplus non-konsumsi. Disarankan penyaluran ke pengelola maggot/kompos mitra Solo Raya untuk cegah pembuangan akhir.`
+        title: "Tindak Lanjut Non-Konsumsi: Mitrasi Pakan & Kompos",
+        icon: <Sprout size={18} className="shrink-0 text-[#E88C2D]" />,
+        content: (
+          <span>
+            Terdapat <strong className="font-bold text-[#854D0E]">{nonConsItems.length} item surplus non-konsumsi</strong>. Disarankan penyaluran ke pengelola maggot/kompos mitra <strong className="font-bold">Solo Raya</strong> untuk mencegah pembuangan akhir.
+          </span>
+        )
       };
     }
 
     return {
       type: "normal",
-      title: "✅ Tindak Lanjut Optimal: Pertahankan Penyelamatan",
-      message: `Saat ini terdapat ${activeItems.length} item surplus aktif yang dapat diakses pengguna. Sistem rekomendasi rute penjemputan siap memfasilitasi distribusi.`
+      title: "Tindak Lanjut Optimal: Pertahankan Penyelamatan",
+      icon: <CheckCircle2 size={18} className="shrink-0 text-[#2F6E4F]" />,
+      content: (
+        <span>
+          Saat ini terdapat <strong className="font-bold text-[#2F6E4F]">{activeItems.length} item surplus aktif</strong> yang dapat diakses pengguna. Sistem rekomendasi rute penjemputan siap memfasilitasi distribusi.
+        </span>
+      )
     };
   }, [filteredBatches]);
 
@@ -350,9 +365,12 @@ export function ImpactDashboardClient({
           }`}
           size={20}
         />
-        <div className="flex-1">
-          <h4 className="text-xs font-bold uppercase tracking-wider">{dynamicRecommendation.title}</h4>
-          <p className="text-xs mt-1 leading-relaxed font-medium">{dynamicRecommendation.message}</p>
+        <div className="flex-1 space-y-1">
+          <div className="flex items-center gap-2">
+            {dynamicRecommendation.icon}
+            <h4 className="text-xs font-bold uppercase tracking-wider">{dynamicRecommendation.title}</h4>
+          </div>
+          <p className="text-xs mt-1 leading-relaxed font-medium pl-6">{dynamicRecommendation.content}</p>
         </div>
       </div>
 
@@ -555,9 +573,9 @@ export function ImpactDashboardClient({
                   }[b.freshness_status] || "bg-[#F4F6F3] text-[#5B655D]";
 
                   const priorityLabel = {
-                    urgent: "🔴 Mendesak",
-                    safe: "🟢 Layak",
-                    "non-consumption": "🟡 Non-Konsumsi"
+                    urgent: "Mendesak",
+                    safe: "Layak",
+                    "non-consumption": "Non-Konsumsi"
                   }[b.freshness_status] || b.freshness_status;
 
                   return (
@@ -577,10 +595,11 @@ export function ImpactDashboardClient({
                         </div>
                       </td>
                       <td className="py-3 px-3">
-                        <StatusBadge status={b.status as any} />
+                        <DistributionBadge status={b.status as any} />
                       </td>
                       <td className="py-3 px-3">
-                        <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${priorityBadge}`}>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${priorityBadge}`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
                           {priorityLabel}
                         </span>
                       </td>
