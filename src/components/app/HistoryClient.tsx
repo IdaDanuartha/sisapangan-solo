@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Search, Download, MapPin, Gift, Package, Map, List, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { SearchAutocomplete, type SearchSuggestion } from "@/components/ui/SearchAutocomplete";
+import { Modal } from "@/components/ui/Modal";
 
 interface Batch {
   id: string;
@@ -24,7 +25,12 @@ interface Batch {
   profiles?: {
     name: string;
   } | null;
+  delivery_photo_url?: string | null;
+  delivery_lat?: number | null;
+  delivery_lng?: number | null;
+  delivery_verified?: boolean | null;
 }
+
 
 const statusOptions = ["Semua", "Tersedia", "Diklaim", "Diambil", "Selesai"];
 
@@ -35,6 +41,8 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
   const [filterDate, setFilterDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
+  const [viewDetailBatch, setViewDetailBatch] = useState<Batch | null>(null);
+
 
   const [view, setView] = useState<"list" | "map">("list");
 
@@ -501,10 +509,23 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${disp.bg}`}>
                         {disp.label}
                       </span>
+                      {b.status === "Selesai" && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setViewDetailBatch(b);
+                          }}
+                          className="text-[10px] text-[#2F6E4F] font-bold hover:underline cursor-pointer"
+                        >
+                          Detail Pengantaran
+                        </button>
+                      )}
                       <span className="text-[10px] text-[#9AA39C] font-semibold">
                         {formatTimeAgo(b.created_at)}
                       </span>
                     </div>
+
                   </div>
                 );
               })}
@@ -639,6 +660,89 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
           cursor: pointer !important;
         }
       `}</style>
+      {/* Detail Pengantaran Modal */}
+      {viewDetailBatch && (
+        <Modal
+          isOpen={!!viewDetailBatch}
+          onClose={() => setViewDetailBatch(null)}
+          title="Detail Bukti Pengantaran"
+          size="sm"
+        >
+          <div className="space-y-4 font-sans text-sm text-[#5B655D]">
+            <p className="text-xs">Berikut adalah rincian bukti serah terima dan lokasi GPS saat relawan menyelesaikan distribusi pangan:</p>
+
+            {/* GPS Verification Status */}
+            <div className="p-3 rounded-[12px] border border-[#E4F0E8] bg-[#F4F6F3] space-y-1">
+              <span className="text-[10px] font-bold text-[#9AA39C] uppercase block">Status Geofencing GPS</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                {viewDetailBatch.delivery_verified ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#3AA65A]">
+                    ✓ Terverifikasi GPS (Tepat Sasaran)
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#D4A373]">
+                    ⚠ Di luar Radius / Bypass manual
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-[#9AA39C] leading-normal">
+                {viewDetailBatch.delivery_verified
+                  ? "Pangan diserahkan tepat di lokasi tujuan yang ditentukan."
+                  : "Diserahkan dengan koordinat di luar batas radius normal (atau GPS relawan kurang akurat saat drop-off)."}
+              </p>
+              {(viewDetailBatch.delivery_lat && viewDetailBatch.delivery_lng) && (
+                <p className="text-[9px] font-mono text-[#9AA39C]">
+                  Koordinat: {viewDetailBatch.delivery_lat.toFixed(5)}, {viewDetailBatch.delivery_lng.toFixed(5)}
+                </p>
+              )}
+            </div>
+
+            {/* Delivery Photo */}
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-[#1B1F1C] block">Foto Serah Terima (Drop-off)</span>
+              {viewDetailBatch.delivery_photo_url ? (
+                <div className="space-y-1">
+                  <a
+                    href={viewDetailBatch.delivery_photo_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block w-full h-48 rounded-[12px] border border-[#E4F0E8] overflow-hidden bg-[#F4F6F3] hover:opacity-90 transition-opacity"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={viewDetailBatch.delivery_photo_url}
+                      alt="Bukti Serah Terima"
+                      className="w-full h-full object-cover"
+                    />
+                  </a>
+                  <a
+                    href={viewDetailBatch.delivery_photo_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[10px] text-[#2F6E4F] font-bold hover:underline block text-center"
+                  >
+                    Buka Foto Ukuran Penuh ↗
+                  </a>
+                </div>
+              ) : (
+                <div className="h-32 border border-dashed border-[#9AA39C]/40 rounded-[12px] flex items-center justify-center bg-[#F4F6F3] text-xs text-[#9AA39C] italic">
+                  Foto tidak tersedia
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-[#E4F0E8]">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setViewDetailBatch(null)}
+              >
+                Tutup
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
