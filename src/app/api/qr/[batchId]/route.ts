@@ -9,9 +9,13 @@ import QRCode from "qrcode";
  * since QR codes are meant to be displayed in the app and printed.
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ batchId: string }> }
 ) {
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
+  const proto = request.headers.get("x-forwarded-proto") || (request.nextUrl.protocol === "https:" ? "https" : "http");
+  const origin = `${proto}://${host}`;
+
   const { batchId } = await params;
 
   const cookieStore = await cookies();
@@ -43,7 +47,7 @@ export async function GET(
 
   // Generate on the fly
   const qrCode = batch.qr_code ?? batchId.slice(0, 8).toUpperCase();
-  const scanUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/scan/${qrCode}`;
+  const scanUrl = `${origin}/scan/${qrCode}`;
 
   const dataUrl = await QRCode.toDataURL(scanUrl, {
     errorCorrectionLevel: "M",

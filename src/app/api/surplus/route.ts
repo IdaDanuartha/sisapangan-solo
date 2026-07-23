@@ -9,6 +9,10 @@ import QRCode from "qrcode";
  * send WhatsApp notification via Fonnte.
  */
 export async function POST(request: NextRequest) {
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || request.nextUrl.host;
+  const proto = request.headers.get("x-forwarded-proto") || (request.nextUrl.protocol === "https:" ? "https" : "http");
+  const origin = `${proto}://${host}`;
+
   const cookieStore = await cookies();
 
   const supabase = createServerClient(
@@ -58,7 +62,7 @@ export async function POST(request: NextRequest) {
   if (!qrCode) {
     qrCode = `${batchId.slice(0, 8).toUpperCase()}`;
     const qrDataUrl = await QRCode.toDataURL(
-      `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/scan/${qrCode}`,
+      `${origin}/scan/${qrCode}`,
       { errorCorrectionLevel: "M", width: 256 }
     );
 
@@ -119,12 +123,12 @@ export async function POST(request: NextRequest) {
                 `*${batch.name}* (${batch.category})\n` +
                 `📍 ${batch.location_label ?? "Lokasi tersedia"}\n\n` +
                 `Ambil untuk pakan, maggot, atau kompos melalui:\n` +
-                `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/app/surplus/${batchId}`
+                `${origin}/app/surplus/${batchId}`
               : `🍱 *Surplus Baru Tersedia!*\n\n` +
                 `*${batch.name}* (${batch.category})\n` +
                 `📍 ${batch.location_label ?? "Lokasi tersedia"}\n\n` +
                 `Klaim sebelum kedaluwarsa melalui:\n` +
-                `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/app/surplus/${batchId}`;
+                `${origin}/app/surplus/${batchId}`;
 
           console.log(`[Fonnte Notify] Sending WhatsApp message to: ${numbers}`);
           const fonnteRes = await fetch("https://api.fonnte.com/send", {
