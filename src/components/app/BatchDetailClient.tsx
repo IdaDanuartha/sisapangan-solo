@@ -144,6 +144,7 @@ interface Batch {
   pickup_rating: number | null;
   created_at: string;
   donor_id: string;
+  volunteer_id: string | null;
   profiles?: { name: string; type: string } | null;
 }
 
@@ -274,12 +275,17 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
     currentBatch.status === "Tersedia" &&
     isVerified;
   const canUpdateStatus =
+    currentUserRole === "admin" &&
+    (currentBatch.status === "Diklaim" || currentBatch.status === "Diambil");
+  const isVolunteerClaimant =
     (currentUserRole === "volunteer" || currentUserRole === "non-consumption") &&
     (currentBatch.status === "Diklaim" || currentBatch.status === "Diambil") &&
+    currentBatch.volunteer_id === currentUserId &&
     isVerified;
   const showRatingPrompt =
     currentBatch.status === "Selesai" &&
     (currentUserRole === "volunteer" || currentUserRole === "non-consumption") &&
+    currentBatch.volunteer_id === currentUserId &&
     rating === null;
 
   async function handleClaim() {
@@ -291,7 +297,7 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
     const supabase = createClient();
     const { error } = await supabase
       .from("surplus_batch")
-      .update({ status: "Diklaim" })
+      .update({ status: "Diklaim", volunteer_id: currentUserId })
       .eq("id", currentBatch.id);
 
     if (!error) {
@@ -317,7 +323,7 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
         console.error("Gagal mencatat log aktivitas:", logErr);
       }
 
-      setCurrentBatch((prev) => ({ ...prev, status: "Diklaim" }));
+      setCurrentBatch((prev) => ({ ...prev, status: "Diklaim", volunteer_id: currentUserId }));
       showToast("Surplus berhasil diklaim!", "success");
     }
     setIsUpdating(false);
@@ -751,6 +757,14 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
               : "Klaim Surplus Ini"}
           </Button>
         )}
+        {isVolunteerClaimant && (
+          <Link
+            href="/app/pickup/route"
+            className="flex items-center justify-center gap-2 w-full h-12 px-4 text-sm font-bold rounded-[10px] bg-[#2F6E4F] text-white hover:bg-[#1E4A35] transition-all flex-shrink-0"
+          >
+            Lihat Rute Penjemputan
+          </Link>
+        )}
         {canUpdateStatus && (
           <Button
             variant="primary"
@@ -761,8 +775,8 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
             id="btn-advance-status"
           >
             {currentBatch.status === "Diklaim"
-              ? "Konfirmasi Sudah Diambil"
-              : "Tandai Selesai"}
+              ? "Admin: Konfirmasi Sudah Diambil"
+              : "Admin: Tandai Selesai"}
           </Button>
         )}
 
