@@ -1397,6 +1397,7 @@ export default function NearbySurplusPage() {
           <div className="absolute bottom-3 left-3 z-[400] flex items-center gap-3 bg-white/95 backdrop-blur-sm rounded-[10px] px-3 py-2 shadow-md border border-[#E4F0E8] text-[10px] font-semibold text-[#5B655D]">
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#3AA65A] inline-block" />Layak</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#F0A93B] inline-block" />Segera</span>
+            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#D14343] inline-block" />Non-Konsumsi</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#2F6E4F] inline-block border-2 border-white ring-1 ring-[#2F6E4F]" />Saya</span>
           </div>
         </div>
