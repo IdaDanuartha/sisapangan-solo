@@ -217,6 +217,14 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [batchToDelete, setBatchToDelete] = useState<string | null>(null);
+
+  // Clear Activity Log states
+  const [showClearLogModal, setShowClearLogModal] = useState(false);
+  const [clearMode, setClearMode] = useState<"all" | "range">("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isClearingLogs, setIsClearingLogs] = useState(false);
+
   const [timeFilter, setTimeFilter] = useState<"minggu_ini" | "bulan_ini" | "tahun_ini" | "5_tahun_terakhir">("minggu_ini");
   const [demoPhone, setDemoPhone] = useState("0881037203394");
   const [demoMessage, setDemoMessage] = useState(demoTemplates.surplus_baru.text);
@@ -226,6 +234,41 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
   const [sendMode, setSendMode] = useState<"personal" | "group">("personal");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [activeTab, setActiveTab] = useState<"dampak" | "manajemen">(role === "monitor" ? "dampak" : "manajemen");
+
+  const handleClearLogs = async () => {
+    setIsClearingLogs(true);
+    try {
+      let url = `/api/activity/log?mode=${clearMode}`;
+      if (clearMode === "range") {
+        if (!startDate && !endDate) {
+          showToast("Silakan tentukan minimal satu tanggal rentang!", "error");
+          setIsClearingLogs(false);
+          return;
+        }
+        if (startDate) url += `&startDate=${startDate}`;
+        if (endDate) url += `&endDate=${endDate}`;
+      }
+
+      const res = await fetch(url, { method: "DELETE" });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal membersihkan log");
+      }
+
+      showToast(data.message || "Log aktivitas berhasil dibersihkan!", "success");
+      setShowClearLogModal(false);
+      setStartDate("");
+      setEndDate("");
+      
+      // Reload activity logs
+      await loadData();
+    } catch (err: any) {
+      showToast(err.message || "Gagal membersihkan log", "error");
+    } finally {
+      setIsClearingLogs(false);
+    }
+  };
 
   const fetchWaGroups = async () => {
     setLoadingGroups(true);
@@ -844,6 +887,15 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
               <p className="text-xs text-[#9AA39C]">Pencatatan real-time aksi pengguna, peran, dan aktivitas harian platform.</p>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowClearLogModal(true)}
+                className="h-8 px-2.5 text-xs text-[#D14343] border border-[#D14343]/20 hover:bg-[#FAEAEA] flex items-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 size={14} />
+                Bersihkan Log
+              </Button>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#EBF5EE] text-[#2F6E4F] border border-[#2F6E4F]/20">
                 <span className="w-2 h-2 rounded-full bg-[#2F6E4F] animate-ping" />
                 Sistem Berjalan Aktif
@@ -1241,6 +1293,92 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
               isLoading={deletingId !== null}
             >
               Hapus
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showClearLogModal}
+        onClose={() => setShowClearLogModal(false)}
+        title="Bersihkan Log Aktivitas"
+        size="md"
+      >
+        <div className="space-y-4 font-sans">
+          <p className="text-xs text-[#5B655D]">
+            Pilih metode pembersihan log aktivitas pengguna dari database platform SisaPangan.
+          </p>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-[#5B655D] uppercase tracking-wider block">Mode Pembersihan</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setClearMode("all")}
+                className={`p-3 rounded-[10px] text-xs font-bold border transition-all text-left cursor-pointer ${
+                  clearMode === "all"
+                    ? "bg-[#EBF5EE] border-[#2F6E4F] text-[#2F6E4F]"
+                    : "bg-white border-[#E4F0E8] text-[#5B655D] hover:bg-[#F4F6F3]"
+                }`}
+              >
+                <div className="font-bold">Hapus Semua Log</div>
+                <div className="text-[10px] font-normal text-[#9AA39C] mt-0.5">Penghapusan seluruh riwayat aktivitas</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setClearMode("range")}
+                className={`p-3 rounded-[10px] text-xs font-bold border transition-all text-left cursor-pointer ${
+                  clearMode === "range"
+                    ? "bg-[#EBF5EE] border-[#2F6E4F] text-[#2F6E4F]"
+                    : "bg-white border-[#E4F0E8] text-[#5B655D] hover:bg-[#F4F6F3]"
+                }`}
+              >
+                <div className="font-bold">Rentang Tanggal</div>
+                <div className="text-[10px] font-normal text-[#9AA39C] mt-0.5">Filter hapus berdasarkan periode</div>
+              </button>
+            </div>
+          </div>
+
+          {clearMode === "range" && (
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#F4F6F3]">
+              <div>
+                <label className="text-[10px] font-bold text-[#5B655D] block mb-1">Tanggal Mulai</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full h-9 px-2.5 rounded-[8px] text-xs border border-[#9AA39C]/40 focus:ring-1 focus:ring-[#2F6E4F] text-[#1B1F1C]"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-[#5B655D] block mb-1">Tanggal Selesai</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full h-9 px-2.5 rounded-[8px] text-xs border border-[#9AA39C]/40 focus:ring-1 focus:ring-[#2F6E4F] text-[#1B1F1C]"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2.5 pt-4 border-t border-[#F4F6F3]">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[#9AA39C] text-[#5B655D] hover:bg-[#F4F6F3]"
+              onClick={() => setShowClearLogModal(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={handleClearLogs}
+              isLoading={isClearingLogs}
+            >
+              Hapus Log Aktivitas
             </Button>
           </div>
         </div>

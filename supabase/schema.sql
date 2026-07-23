@@ -244,6 +244,8 @@ CREATE POLICY "activity_log: auth users can insert" ON user_activity_log
   FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 CREATE POLICY "activity_log: anyone can read" ON user_activity_log
   FOR SELECT USING (TRUE);
+CREATE POLICY "activity_log: auth users can delete" ON user_activity_log
+  FOR DELETE USING (auth.role() = 'authenticated');
 
 -- =====================================================
 -- BENEFICIARIES (Drop-off locations)
