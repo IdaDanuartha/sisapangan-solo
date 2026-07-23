@@ -713,8 +713,8 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
             </div>
           </div>
 
-          <div className="relative pt-2">
-            <svg viewBox="0 0 1000 200" className="w-full h-auto overflow-visible" preserveAspectRatio="none">
+          <div className="relative pt-2 w-full h-[160px] sm:h-[200px]">
+            <svg viewBox="0 0 1000 200" className="w-full h-full" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="greenGrad2" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#2F6E4F" stopOpacity="0.2" />
@@ -730,17 +730,47 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
               <path d={currentChart.orangeAreaPath} fill="url(#orangeGrad2)" />
               <path d={currentChart.greenLinePath} fill="none" stroke="#2F6E4F" strokeWidth="3" strokeLinecap="round" />
               <path d={currentChart.orangeLinePath} fill="none" stroke="#E88C2D" strokeWidth="2.5" strokeDasharray="4 3" strokeLinecap="round" />
-
-              {/* Green dots */}
-              {currentChart.greenDots.map((dot: AdminChartDot, idx: number) => (
-                <circle key={idx} cx={dot.cx} cy={dot.cy} r="4" fill="#2F6E4F" stroke="#FFF" strokeWidth="1.5" className="chart-dot cursor-pointer" />
-              ))}
-
-              {/* Orange dots */}
-              {currentChart.orangeDots.map((dot: AdminChartDot, idx: number) => (
-                <circle key={idx} cx={dot.cx} cy={dot.cy} r="4" fill="#E88C2D" stroke="#FFF" strokeWidth="1.5" className="chart-dot cursor-pointer" />
-              ))}
             </svg>
+
+            {/* Green HTML dots to avoid oval stretching */}
+            {currentChart.greenDots.map((dot: AdminChartDot, idx: number) => (
+              <div
+                key={`green-${idx}`}
+                className="group absolute w-2.5 h-2.5 rounded-full bg-[#2F6E4F] border border-white cursor-pointer z-10"
+                style={{
+                  left: `${(dot.cx / 1000) * 100}%`,
+                  top: `${(dot.cy / 200) * 100}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                {/* Tooltip */}
+                <div className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#1B1F1C] text-white text-[9px] font-semibold py-1 px-2.5 rounded shadow-lg whitespace-nowrap z-20">
+                  {dot.label}
+                  {/* Arrow */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1B1F1C]" />
+                </div>
+              </div>
+            ))}
+
+            {/* Orange HTML dots to avoid oval stretching */}
+            {currentChart.orangeDots.map((dot: AdminChartDot, idx: number) => (
+              <div
+                key={`orange-${idx}`}
+                className="group absolute w-2.5 h-2.5 rounded-full bg-[#E88C2D] border border-white cursor-pointer z-10"
+                style={{
+                  left: `${(dot.cx / 1000) * 100}%`,
+                  top: `${(dot.cy / 200) * 100}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                {/* Tooltip */}
+                <div className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#1B1F1C] text-white text-[9px] font-semibold py-1 px-2.5 rounded shadow-lg whitespace-nowrap z-20">
+                  {dot.label}
+                  {/* Arrow */}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1B1F1C]" />
+                </div>
+              </div>
+            ))}
           </div>
           <div className="relative h-6 text-[10px] font-semibold text-[#9AA39C]">
             {currentChart.greenDots.map((dot: AdminChartDot, idx: number) => (
@@ -805,8 +835,8 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
             <div>
               <h2 className="text-sm font-bold text-[#1B1F1C]">Tren Makanan Terselamatkan (kg)</h2>
             </div>
-            <div className="relative pt-4 flex-1 flex flex-col justify-center">
-              <svg viewBox="0 0 1000 200" className="w-full h-auto overflow-visible" preserveAspectRatio="none">
+            <div className="relative pt-4 w-full h-[160px] sm:h-[200px]">
+              <svg viewBox="0 0 1000 200" className="w-full h-full" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#2F6E4F" stopOpacity="0.1" />
@@ -816,41 +846,27 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
 
                 <path d={currentChart.greenAreaPath} fill="url(#greenGrad)" />
                 <path d={currentChart.greenLinePath} fill="none" stroke="#1B1F1C" strokeWidth="3.5" strokeLinecap="round" />
-
-                {currentChart.greenDots.map((dot, i) => (
-                  <g key={`g-${i}`} className="group/dot">
-                    <circle
-                      cx={dot.cx}
-                      cy={dot.cy}
-                      r="4.5"
-                      fill="#1B1F1C"
-                      stroke="#FFFFFF"
-                      strokeWidth="2.5"
-                      className="transition-all duration-150 group-hover/dot:r-6 cursor-pointer"
-                    />
-                    <g className="opacity-0 pointer-events-none group-hover/dot:opacity-100 transition-opacity duration-150">
-                      <rect
-                        x={dot.cx - 50}
-                        y={dot.cy - 35}
-                        width="100"
-                        height="24"
-                        rx="4"
-                        fill="#1B1F1C"
-                      />
-                      <text
-                        x={dot.cx}
-                        y={dot.cy - 19}
-                        textAnchor="middle"
-                        fill="#FFFFFF"
-                        fontSize="9"
-                        fontWeight="600"
-                      >
-                        {dot.label}
-                      </text>
-                    </g>
-                  </g>
-                ))}
               </svg>
+
+              {/* Green HTML dots to avoid oval stretching */}
+              {currentChart.greenDots.map((dot, idx) => (
+                <div
+                  key={`green-trend-${idx}`}
+                  className="group absolute w-2.5 h-2.5 rounded-full bg-[#1B1F1C] border border-white cursor-pointer"
+                  style={{
+                    left: `${(dot.cx / 1000) * 100}%`,
+                    top: `${(dot.cy / 200) * 100}%`,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  {/* Tooltip */}
+                  <div className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#1B1F1C] text-white text-[9px] font-semibold py-1 px-2.5 rounded shadow-lg whitespace-nowrap z-10">
+                    {dot.label}
+                    {/* Arrow */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1B1F1C]" />
+                  </div>
+                </div>
+              ))}
 
               <div className="relative h-6 mt-3 text-[9px] text-[#9AA39C] font-semibold">
                 {currentChart.greenDots.map((dot, idx) => (

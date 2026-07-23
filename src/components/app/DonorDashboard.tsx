@@ -326,21 +326,27 @@ export function DonorDashboard({ userId }: { userId: string }) {
               strokeWidth="3"
               strokeLinecap="round"
             />
-
-            {/* Dots on data points */}
-            {currentChart.dots.map((dot, idx) => (
-              <circle
-                key={idx}
-                cx={dot.cx}
-                cy={dot.cy}
-                r="5"
-                fill="#2F6E4F"
-                stroke="#FFF"
-                strokeWidth="2"
-                className="chart-dot cursor-pointer"
-              />
-            ))}
           </svg>
+
+          {/* HTML Chart Dots to avoid oval stretching */}
+          {currentChart.dots.map((dot, idx) => (
+            <div
+              key={idx}
+              className="group absolute w-2.5 h-2.5 rounded-full bg-[#2F6E4F] border-2 border-white cursor-pointer z-10"
+              style={{
+                left: `${(dot.cx / 500) * 100}%`,
+                top: `${(dot.cy / 150) * 100}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+            >
+              {/* Tooltip */}
+              <div className="opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-[#1B1F1C] text-white text-[9px] font-semibold py-1 px-2.5 rounded shadow-lg whitespace-nowrap z-20">
+                {dot.label}
+                {/* Arrow */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-[#1B1F1C]" />
+              </div>
+            </div>
+          ))}
         </div>
         <div className="relative h-6 mt-3 text-[9px] sm:text-[10px] font-semibold text-[#9AA39C]">
           {currentChart.dots.map((dot, idx) => (
