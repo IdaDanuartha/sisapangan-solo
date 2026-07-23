@@ -108,10 +108,14 @@ CREATE TABLE IF NOT EXISTS surplus_batch (
   qr_code TEXT UNIQUE,
   qr_data_url TEXT,
   pickup_rating SMALLINT CHECK (pickup_rating BETWEEN 1 AND 5),
+  volunteer_id UUID REFERENCES profiles(id) ON DELETE SET NULL, -- set when batch is claimed
   template_id UUID, -- references surplus_template if from a recurring batch
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Migration: add volunteer_id if it doesn't exist yet (safe to run on existing databases)
+ALTER TABLE surplus_batch ADD COLUMN IF NOT EXISTS volunteer_id UUID REFERENCES profiles(id) ON DELETE SET NULL;
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS surplus_batch_donor_id_idx ON surplus_batch(donor_id);

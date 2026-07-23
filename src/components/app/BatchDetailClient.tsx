@@ -144,7 +144,7 @@ interface Batch {
   pickup_rating: number | null;
   created_at: string;
   donor_id: string;
-  volunteer_id: string | null;
+  volunteer_id?: string | null;
   profiles?: { name: string; type: string } | null;
 }
 
@@ -152,6 +152,7 @@ interface DistributionLog {
   id: string;
   status: string;
   timestamp: string;
+  volunteer_id?: string | null;
   profiles?: { name: string } | null;
 }
 
@@ -190,6 +191,10 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
   const router = useRouter();
   const { showToast } = useToast();
   const [currentBatch, setCurrentBatch] = useState(batch);
+  const claimantLog = logs.find((l) => l.status === "Diklaim");
+  const [claimedByUserId, setClaimedByUserId] = useState<string | null>(
+    claimantLog?.volunteer_id ?? null
+  );
   const [rating, setRating] = useState<number | null>(batch.pickup_rating);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showConfirmClaim, setShowConfirmClaim] = useState(false);
@@ -294,13 +299,19 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
 
   async function confirmClaim() {
     setIsUpdating(true);
-    const supabase = createClient();
-    const { error } = await supabase
-      .from("surplus_batch")
-      .update({ status: "Diklaim", volunteer_id: currentUserId })
-      .eq("id", currentBatch.id);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("surplus_batch")
+        .update({ status: "Diklaim", volunteer_id: currentUserId })
+        .eq("id", currentBatch.id);
 
-    if (!error) {
+      if (error) {
+        console.error("Gagal mengklaim surplus:", error);
+        showToast("Gagal mengklaim surplus: " + error.message, "error");
+        return;
+      }
+
       await supabase.from("distribution_log").insert({
         batch_id: currentBatch.id,
         volunteer_id: currentUserId,
@@ -326,15 +337,19 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
       setCurrentBatch((prev) => ({ ...prev, status: "Diklaim", volunteer_id: currentUserId }));
       showToast("Surplus berhasil diklaim!", "success");
 
-      // Trigger claim notification via API
+      // Trigger claim notification via API (fire-and-forget)
       fetch("/api/surplus/claim/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ batchId: currentBatch.id, volunteerId: currentUserId }),
       }).catch((err) => console.error("Gagal mengirim notifikasi klaim:", err));
+    } catch (err: any) {
+      console.error("Error saat mengklaim surplus:", err);
+      showToast("Terjadi kesalahan saat mengklaim surplus.", "error");
+    } finally {
+      setIsUpdating(false);
+      setShowConfirmClaim(false);
     }
-    setIsUpdating(false);
-    setShowConfirmClaim(false);
   }
 
   async function advanceStatus() {

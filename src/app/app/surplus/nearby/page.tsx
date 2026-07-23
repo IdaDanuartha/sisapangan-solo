@@ -1016,38 +1016,59 @@ export default function NearbySurplusPage() {
 
         {/* Filters dropdowns */}
         <div className="flex gap-2 w-full md:w-auto">
-          <select
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
-          >
-            <option value="">Kategori</option>
-            {["Makanan Matang", "Roti/Bakery", "Buah Potong", "Sayuran", "Bahan Segar"].map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+          <div className="relative flex-1 md:flex-initial">
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="h-10 pl-3 pr-8 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full min-w-[110px]"
+            >
+              <option value="">Kategori</option>
+              {["Makanan Matang", "Roti/Bakery", "Buah Potong", "Sayuran", "Bahan Segar"].map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </div>
 
-          <select
-            value={radiusKm}
-            onChange={(e) => setRadiusKm(Number(e.target.value))}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
-          >
-            <option value={2}>2 km</option>
-            <option value={5}>5 km</option>
-            <option value={10}>10 km</option>
-            <option value={20}>20 km</option>
-            <option value={99999}>Semua Jarak</option>
-          </select>
+          <div className="relative flex-1 md:flex-initial">
+            <select
+              value={radiusKm}
+              onChange={(e) => setRadiusKm(Number(e.target.value))}
+              className="h-10 pl-3 pr-8 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full min-w-[90px]"
+            >
+              <option value={2}>2 km</option>
+              <option value={5}>5 km</option>
+              <option value={10}>10 km</option>
+              <option value={20}>20 km</option>
+              <option value={99999}>Semua Jarak</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </div>
 
-          <select
-            value={filterFreshness}
-            onChange={(e) => setFilterFreshness(e.target.value)}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
-          >
-            <option value="">Kelayakan</option>
-            <option value="safe">Layak Konsumsi</option>
-            <option value="urgent">Segera Ambil</option>
-          </select>
+          <div className="relative flex-1 md:flex-initial">
+            <select
+              value={filterFreshness}
+              onChange={(e) => setFilterFreshness(e.target.value)}
+              className="h-10 pl-3 pr-8 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full min-w-[110px]"
+            >
+              <option value="">Kelayakan</option>
+              <option value="safe">Layak Konsumsi</option>
+              <option value="urgent">Segera Ambil</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          </div>
 
           {/* Toggle button group */}
           <div className="flex bg-[#F4F6F3] rounded-[8px] p-0.5 border border-[#E4F0E8] select-none shrink-0">
