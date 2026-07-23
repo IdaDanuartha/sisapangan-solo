@@ -1,135 +1,137 @@
 # Product Requirements Document
-## SisaPangan Solo, Sistem Koordinasi Food Rescue untuk Solo Raya
+## SisaPangan Solo — Food Rescue Coordination System for Greater Solo (Solo Raya)
 
-Versi 1.0, disusun berdasarkan Proposal BYTESFEST 2026, TIM REGEX
+Version 1.0, prepared based on the BYTESFEST 2026 Proposal, TIM REGEX
 
----
-
-## 1. Ringkasan Produk
-
-SisaPangan Solo adalah platform koordinasi food rescue yang mempertemukan donor pangan (UMKM kuliner, restoran, katering, pasar), relawan, penerima manfaat, pengelola pangan non-konsumsi, dan pemantau daerah dalam satu alur kerja digital. Produk ini bukan aplikasi donasi biasa. Fokus utamanya adalah triase kelayakan pangan berbasis waktu, pencocokan pihak terdekat, dan pengukuran dampak yang bisa dibuktikan lewat data.
-
-Untuk versi website, produk ini terdiri dari dua bagian besar:
-
-1. **Marketing site / landing page**, tempat calon donor, relawan, dan mitra memahami nilai produk dan mendaftar.
-2. **Aplikasi web multi-role** (donor, relawan/penerima, pengelola non-konsumsi, pemantau/admin), tempat alur inti food rescue berjalan.
-
-### 1.1 Tujuan Produk
-
-- Memangkas waktu antara surplus pangan ditemukan dan diambil.
-- Memberi prioritas otomatis lewat Freshness and Risk Score, supaya makanan berisiko tinggi waktu tidak terlambat ditangani.
-- Menyediakan bukti distribusi yang bisa dilacak lewat QR, supaya donor dan penerima sama-sama merasa aman.
-- Menyajikan dashboard dampak yang bisa langsung dipakai untuk laporan ke pemerintah daerah atau mitra.
-
-### 1.2 Yang Bukan Bagian dari MVP
-
-Ditulis di sini supaya scope tidak melebar saat implementasi.
-
-- Tidak ada payment gateway atau transaksi uang.
-- Tidak menjadi lembaga penyalur bantuan resmi.
-- Tidak menyimpan data sensitif penerima secara mendalam, cukup data operasional untuk pencocokan dan pelacakan.
-- Freshness and Risk Score adalah alat bantu prioritas, bukan pengganti pemeriksaan manual di lapangan.
+> **Note on language:** This PRD is written in English, and all route/endpoint names use English slugs for developer clarity. However, all on-screen UI copy (labels, buttons, menu items, headings, status text) stays in **Bahasa Indonesia**, since the live product targets Indonesian users in Solo Raya. Wherever exact UI copy is referenced below, the Indonesian string is shown in quotes, with an English gloss in parentheses on first use.
 
 ---
 
-## 2. Target Pengguna
+## 1. Product Overview
 
-| Role | Siapa | Kebutuhan Utama di Website |
+SisaPangan Solo is a food rescue coordination platform that connects food donors (culinary MSMEs, restaurants, caterers, markets), volunteers, beneficiaries, non-consumption food managers, and regional monitors within a single digital workflow. This is not an ordinary donation app. Its core focus is time-based food safety triage, matching with the nearest relevant party, and measuring impact that can be proven with data.
+
+For the website version, the product consists of two major parts:
+
+1. **Marketing site / landing page** — where prospective donors, volunteers, and partners understand the product's value and sign up.
+2. **Multi-role web app** (donor, volunteer/receiver, non-consumption manager, monitor/admin) — where the core food rescue flow runs.
+
+### 1.1 Product Goals
+
+- Cut the time between when a food surplus is found and when it is picked up.
+- Provide automatic prioritization via the Freshness and Risk Score, so that time-sensitive, high-risk food doesn't get handled too late.
+- Provide trackable proof of distribution via QR code, so donors and recipients both feel secure.
+- Present an impact dashboard that can be used directly for reporting to local government or partners.
+
+### 1.2 What's Out of Scope for the MVP
+
+Written here so scope doesn't creep during implementation.
+
+- No payment gateway or monetary transactions.
+- Not an official aid-distribution institution.
+- Does not store deep, sensitive recipient data — only the operational data needed for matching and tracking.
+- The Freshness and Risk Score is a prioritization aid, not a replacement for manual field inspection.
+
+---
+
+## 2. Target Users
+
+| Role | Who | Main Website Needs |
 |---|---|---|
-| Donor | UMKM kuliner, restoran, hotel, katering, kantin, pasar, penyelenggara acara | Form cepat untuk posting surplus, status pengambilan real-time, riwayat distribusi |
-| Volunteer / Receiver | Relawan food sharing, komunitas sosial, panti, dapur umum, posyandu | Daftar pickup prioritas, rute ke lokasi donor, klaim satu tombol |
-| Pengelola non-konsumsi | Peternak, pengelola maggot, bank sampah organik | Akses ke batch berstatus tidak layak konsumsi manusia |
-| Pemantau / Pemerintah daerah / Mitra | Dinas terkait, organisasi mitra seperti Gita Pertiwi | Dashboard agregat, pola surplus, volume terselamatkan |
-| Admin internal | Tim REGEX / operator platform | Moderasi data, verifikasi akun, monitoring sistem |
+| Donor | Culinary MSMEs, restaurants, hotels, caterers, canteens, markets, event organizers | Quick form to post surplus, real-time pickup status, distribution history |
+| Volunteer / Receiver | Food-sharing volunteers, social communities, orphanages, community kitchens, posyandu (community health posts) | Prioritized pickup list, route to donor location, one-tap claim |
+| Non-consumption manager | Livestock farmers, maggot/BSF cultivators, organic waste banks | Access to batches flagged as unfit for human consumption |
+| Monitor / Local government / Partners | Relevant government agencies, partner organizations such as Gita Pertiwi | Aggregate dashboard, surplus patterns, volume rescued |
+| Internal admin | TIM REGEX / platform operators | Data moderation, account verification, system monitoring |
 
-Untuk MVP, tiga role yang wajib punya alur lengkap di website adalah **Donor**, **Volunteer/Receiver**, dan **Pemantau (dashboard dampak)**. Pengelola non-konsumsi bisa memakai antarmuka yang sama dengan Volunteer, dibedakan lewat filter kategori.
+For the MVP, the three roles that must have a complete flow on the website are **Donor**, **Volunteer/Receiver**, and **Monitor (impact dashboard)**. The non-consumption manager can reuse the Volunteer interface, distinguished by a category filter.
 
 ---
 
-## 3. Filosofi Desain
+## 3. Design Philosophy
 
-### 3.1 Prinsip Inti
+### 3.1 Core Principles
 
-**Jelas sebelum indah.** Ini adalah alat kerja lapangan, dipakai orang yang buru-buru saat surplus pangan ditemukan. Setiap keputusan visual harus mempercepat pembacaan status, bukan menghiasnya.
+**Clarity before beauty.** This is a field tool, used by people in a hurry the moment a food surplus is found. Every visual decision should speed up status recognition, not decorate it.
 
-**Urgensi punya bahasa visual sendiri.** Sistem status hijau, kuning, merah adalah bagian dari fungsi produk, bukan dekorasi. Warna status ini konsisten di semua tempat, dari badge kecil di kartu sampai peta.
+**Urgency has its own visual language.** The green/yellow/red status system is part of the product's function, not decoration. This status color scheme stays consistent everywhere, from a small badge on a card to the map.
 
-**Hangat, bukan korporat.** Produk ini bicara ke UMKM kuliner dan relawan komunitas, bukan enterprise SaaS. Nuansa desain mengambil kehangatan dari pangan dan komunitas lokal Solo, tapi tetap modern dan rapi, bukan bergaya tradisional atau ramai.
+**Warm, not corporate.** This product speaks to culinary MSMEs and community volunteers, not enterprise SaaS buyers. The design should draw warmth from local Solo food and community culture, while staying modern and clean — not traditional or cluttered.
 
-**Satu sistem, banyak peran.** Donor, relawan, dan pemantau memakai shell antarmuka yang sama, hanya beda konten dashboard. Ini menjaga konsistensi dan mempercepat development.
+**One system, many roles.** Donor, volunteer, and monitor share the same interface shell, differing only in dashboard content. This keeps things consistent and speeds up development.
 
-**Tidak generik.** Hindari layout template SaaS yang terlalu sering dipakai, seperti hero dengan gradient ungu-biru dan ilustrasi 3D generik. Gunakan kombinasi warna dan tipografi yang punya karakter, foto/ilustrasi yang terasa lokal dan manusiawi, serta detail interaksi yang niat, bukan asal ditempel.
+**Not generic.** Avoid overused SaaS template layouts, like purple-blue gradient heroes with generic 3D illustrations. Use color and typography combinations with real character, photos/illustrations that feel local and human, and interaction details that feel intentional rather than bolted on.
 
 ### 3.2 Color Palette
 
-Palet dibangun dari dua ide, kehangatan pangan dan kepercayaan sistem. Warna dasar terasa organik dan approachable, sementara warna status memakai sistem semaphore yang universal supaya bisa dibaca sekilas.
+The palette is built from two ideas: the warmth of food, and trust in the system. The base colors feel organic and approachable, while status colors use a universal semaphore system that can be read at a glance.
 
-**Warna Primer**
+**Primary Colors**
 
-| Nama | Hex | Penggunaan |
+| Name | Hex | Usage |
 |---|---|---|
-| Harvest Green | `#2F6E4F` | Warna brand utama, navigasi, CTA utama, elemen aktif |
-| Harvest Green Dark | `#1E4A35` | Hover state, teks pada background terang, footer |
-| Harvest Green Light | `#E4F0E8` | Background section, badge sukses, highlight lembut |
+| Harvest Green | `#2F6E4F` | Main brand color, navigation, primary CTA, active elements |
+| Harvest Green Dark | `#1E4A35` | Hover state, text on light backgrounds, footer |
+| Harvest Green Light | `#E4F0E8` | Section backgrounds, success badges, soft highlights |
 
-**Warna Sekunder / Aksen**
+**Secondary / Accent Colors**
 
-| Nama | Hex | Penggunaan |
+| Name | Hex | Usage |
 |---|---|---|
-| Warm Amber | `#E88C2D` | Aksen hangat, ikon pangan, elemen interaktif sekunder, ilustrasi |
-| Amber Soft | `#FBEBD8` | Background kartu, section alternatif |
-| Clay Terracotta | `#C1502E` | Aksen dekoratif opsional, dipakai tipis untuk variasi, bukan status |
+| Warm Amber | `#E88C2D` | Warm accent, food icons, secondary interactive elements, illustration |
+| Amber Soft | `#FBEBD8` | Card backgrounds, alternate sections |
+| Clay Terracotta | `#C1502E` | Optional decorative accent, used sparingly for variation, not for status |
 
-**Warna Netral**
+**Neutral Colors**
 
-| Nama | Hex | Penggunaan |
+| Name | Hex | Usage |
 |---|---|---|
-| Ink | `#1B1F1C` | Teks utama |
-| Slate | `#5B655D` | Teks sekunder, caption |
-| Mist | `#9AA39C` | Placeholder, border, teks disabled |
-| Fog | `#F4F6F3` | Background utama aplikasi |
-| Paper | `#FFFFFF` | Card, modal, surface terangkat |
+| Ink | `#1B1F1C` | Primary text |
+| Slate | `#5B655D` | Secondary text, captions |
+| Mist | `#9AA39C` | Placeholder, borders, disabled text |
+| Fog | `#F4F6F3` | App-wide background |
+| Paper | `#FFFFFF` | Cards, modals, elevated surfaces |
 
-**Warna Status Kelayakan Pangan** (dipakai konsisten sebagai bagian dari fungsi, bukan branding)
+**Food Safety Status Colors** (used consistently as part of function, not branding)
 
-| Status | Nama | Hex | Arti |
+| Status | Name | Hex | Meaning |
 |---|---|---|---|
-| Aman | Fresh Green | `#3AA65A` | Layak disalurkan ke manusia |
-| Segera | Urgent Amber | `#F0A93B` | Perlu segera diambil |
-| Non-konsumsi | Alert Red | `#D14343` | Diarahkan ke pakan, maggot, atau kompos |
+| Safe | Fresh Green | `#3AA65A` | Fit to distribute to people |
+| Urgent | Urgent Amber | `#F0A93B` | Needs to be picked up soon |
+| Non-consumption | Alert Red | `#D14343` | Redirected to feed, maggot cultivation, or compost |
 
-Catatan penting: warna status ini sengaja dibuat berbeda saturasi dan tone dari warna brand (Harvest Green vs Fresh Green), supaya badge status tidak tertukar dengan elemen navigasi atau branding saat sistem dibaca cepat.
+Important note: these status colors are deliberately different in saturation and tone from the brand colors (Harvest Green vs. Fresh Green), so status badges are never confused with navigation or branding elements when scanned quickly.
 
-**Dark mode** tidak wajib di MVP. Jika dikerjakan di fase lanjutan, gunakan Ink sebagai background dan naikkan lightness warna status sekitar 10 persen supaya tetap kontras.
+**Dark mode** is not required for the MVP. If tackled in a later phase, use Ink as the background and raise status color lightness by about 10% to maintain contrast.
 
-### 3.3 Tipografi
+### 3.3 Typography
 
-| Peran | Font | Alasan |
+| Role | Font | Rationale |
 |---|---|---|
-| Display / Headline (landing page, judul besar) | **Instrument Serif** | Karakter editorial, hangat, dan manusiawi, cocok untuk storytelling di landing page tanpa terasa seperti template startup generik |
-| UI / Body / Dashboard | **Inter** | Netral, sangat legible di ukuran kecil, standar industri untuk dashboard dan data-dense screen |
-| Angka / Metric besar (dashboard dampak) | **Inter Tight** atau **Inter** dengan `font-variant-numeric: tabular-nums` | Angka sejajar rapi saat berubah, penting untuk dashboard real-time |
+| Display / Headline (landing page, large titles) | **Instrument Serif** | Editorial, warm, human character — good for storytelling on the landing page without feeling like a generic startup template |
+| UI / Body / Dashboard | **Inter** | Neutral, highly legible at small sizes, industry standard for dashboards and data-dense screens |
+| Large numbers / metrics (impact dashboard) | **Inter Tight** or **Inter** with `font-variant-numeric: tabular-nums` | Numbers align neatly when they change — important for a real-time dashboard |
 
-Skala tipografi disarankan memakai rasio 1.25 (major third) dari base 16px, dengan headline landing page bisa naik sampai 56-72px di desktop.
+Recommended type scale ratio is 1.25 (major third) from a 16px base, with landing page headlines scaling up to 56–72px on desktop.
 
-Hindari memakai font display untuk label UI kecil seperti badge status atau tombol, karena serif di ukuran kecil menurunkan legibility di layar mobile.
+Avoid using the display font for small UI labels like status badges or buttons — serif at small sizes hurts legibility on mobile screens.
 
-### 3.4 Ikon dan Ilustrasi
+### 3.4 Icons and Illustration
 
-- Semua ikon fungsional memakai **Lucide Icons**, stroke width konsisten 1.5-2px, tanpa fill kecuali untuk state aktif.
-- Tidak ada emoji di antarmuka atau copywriting.
-- Ilustrasi custom (jika ada, misalnya di empty state atau landing page) memakai gaya line-art sederhana dengan aksen warna dari palet di atas, bukan ilustrasi 3D generik atau ilustrasi bergaya corporate memphis yang sudah terlalu umum di produk SaaS 2024-2025.
-- Foto (jika dipakai di landing page) sebaiknya foto asli aktivitas food rescue atau UMKM kuliner lokal, bukan stock photo bertema generik "orang tersenyum sambil pegang laptop".
+- All functional icons use **Lucide Icons**, consistent 1.5–2px stroke width, unfilled except for active states.
+- No emoji in the UI or copywriting.
+- Custom illustrations (if used — e.g. empty states or the landing page) use a simple line-art style with accent colors from the palette above, not generic 3D illustration or the "corporate memphis" style that's already overused in 2024–2025 SaaS products.
+- Photos (if used on the landing page) should be real photos of food rescue activity or local culinary MSMEs, not generic stock photos of "smiling people with laptops."
 
-### 3.5 Spacing, Radius, dan Shadow
+### 3.5 Spacing, Radius, and Shadow
 
-- Base spacing unit 4px, skala umum yang dipakai: 4, 8, 12, 16, 24, 32, 48, 64.
-- Radius: 8px untuk elemen kecil (input, badge), 12-16px untuk card, 24px untuk modal besar. Konsisten, jangan campur radius tajam dan sangat bulat dalam satu layar.
-- Shadow dipakai minim, hanya untuk elevasi fungsional (dropdown, modal, floating action button). Gunakan shadow lembut dengan opacity rendah, bukan shadow gelap tajam bergaya Material lama.
+- Base spacing unit is 4px, common scale: 4, 8, 12, 16, 24, 32, 48, 64.
+- Radius: 8px for small elements (inputs, badges), 12–16px for cards, 24px for large modals. Stay consistent — don't mix sharp and very rounded radii on one screen.
+- Shadows should be used sparingly, only for functional elevation (dropdowns, modals, floating action buttons). Use soft, low-opacity shadows, not the old, harsh Material-style shadows.
 
 ---
 
-## 4. Arsitektur Informasi
+## 4. Information Architecture
 
 ### 4.1 Sitemap
 
@@ -137,299 +139,367 @@ Hindari memakai font display untuk label UI kecil seperti badge status atau tomb
 /
   Landing Page (public)
     - Hero
-    - Masalah (data food loss and waste)
-    - Cara Kerja
-    - Fitur Utama
-    - Dampak / Social Proof
-    - CTA Daftar
+    - Problem (food loss and waste data)
+    - How It Works
+    - Key Features
+    - Impact / Social Proof
+    - Sign-up CTA
 
 /login
 /register
-  - Register Donor
-  - Register Volunteer/Receiver
-  - Register Pengelola Non-konsumsi
+  - Register as Donor
+  - Register as Volunteer/Receiver
+  - Register as Non-consumption Manager
 
-/app  (butuh login, role-based)
-  /app/dashboard              -> beda konten per role
-  /app/surplus/tambah         -> Donor
-  /app/surplus/terdekat       -> Volunteer/Receiver, peta + list
-  /app/surplus/:id            -> Detail batch, status, QR
-  /app/pickup/rute            -> Volunteer, rute ke lokasi
-  /app/riwayat                -> Semua role, riwayat transaksi mereka
-  /app/dampak                 -> Impact dashboard (Pemantau + agregat publik terbatas)
-  /app/profil
-  /app/notifikasi
+/app  (requires login, role-based)
+  /app/dashboard              -> content differs per role
+  /app/surplus/add            -> Donor
+  /app/surplus/recurring      -> Donor, manage Recurring Surplus templates
+  /app/surplus/nearby         -> Volunteer/Receiver, map + list
+  /app/surplus/:id            -> Batch detail, status, QR, post-pickup rating
+  /app/pickup/route           -> Volunteer, route to location
+  /app/history                -> All roles, their own transaction history
+  /app/impact                 -> Impact dashboard (Monitor + limited public aggregate)
+  /app/badges                 -> Donor, streak and contribution badges
+  /app/profile                -> includes notification channel preference (in-app / WhatsApp)
+  /app/notifications
 
-/scan/:qrcode                 -> Halaman publik hasil scan QR traceability
+/scan/:qrcode                 -> Public QR traceability result page
 ```
 
 ### 4.2 Role-based Navigation
 
-Shell aplikasi sama untuk semua role (sidebar di desktop, bottom navigation di mobile), tapi item menu menyesuaikan:
+The app shell is the same for all roles (sidebar on desktop, bottom navigation on mobile), but menu items adapt per role. Menu labels below are shown as they actually appear on screen (in Indonesian), with an English gloss:
 
-- **Donor**: Dashboard, Tambah Surplus, Riwayat, Profil
-- **Volunteer/Receiver**: Dashboard, Surplus Terdekat, Rute Pickup, Riwayat, Profil
-- **Pengelola non-konsumsi**: sama seperti Volunteer, dengan filter default kategori non-konsumsi
-- **Pemantau/Admin**: Dashboard Dampak, Data Surplus (read-only map), Manajemen Akun (khusus admin), Profil
+- **Donor**: "Dashboard", "Tambah Surplus" (Add Surplus), "Surplus Rutin" (Recurring Surplus), "Riwayat" (History), "Badge Saya" (My Badges), "Profil" (Profile)
+- **Volunteer/Receiver**: "Dashboard", "Surplus Terdekat" (Nearby Surplus), "Rute Pickup" (Pickup Route), "Riwayat" (History), "Profil" (Profile)
+- **Non-consumption manager**: same as Volunteer, with the non-consumption category filter applied by default
+- **Monitor/Admin**: "Dashboard Dampak" (Impact Dashboard), "Data Surplus" (read-only map), "Manajemen Akun" (Account Management, admin-only), "Profil" (Profile)
 
 ---
 
-## 5. Landing Page, Spesifikasi Detail
+## 5. Landing Page — Detailed Spec
 
-Landing page adalah pintu masuk utama untuk akuisisi donor dan relawan baru, sekaligus alat presentasi saat demo hackathon.
+The landing page is the main acquisition channel for new donors and volunteers, and also serves as a presentation tool during the hackathon demo.
 
-### 5.1 Struktur Section
+### 5.1 Section Structure
 
 1. **Navbar**
-   Logo, anchor link (Cara Kerja, Fitur, Dampak), tombol Masuk dan Daftar. Sticky, berubah background dari transparan ke solid saat scroll melewati hero.
+   Logo, anchor links ("Cara Kerja", "Fitur", "Dampak" — How It Works, Features, Impact), "Masuk" (Log In) and "Daftar" (Sign Up) buttons. Sticky, transitions from transparent to solid background as the user scrolls past the hero.
 
 2. **Hero**
-   Headline besar dengan font Instrument Serif, satu kalimat sub-headline yang menjelaskan produk dalam bahasa manusia, dua CTA (Daftar sebagai Donor, Daftar sebagai Relawan), dan visual pendukung berupa mockup dashboard atau ilustrasi alur surplus ke penerima.
-   Animasi GSAP: elemen headline dan CTA fade-up bertahap saat halaman dimuat (bukan saat scroll), dengan stagger ringan 80-100ms antar elemen.
+   Large headline in Instrument Serif, one sub-headline sentence explaining the product in plain language, two CTAs ("Daftar sebagai Donor" / "Daftar sebagai Relawan" — Sign Up as a Donor / Sign Up as a Volunteer), and a supporting visual such as a dashboard mockup or an illustration of the surplus-to-recipient flow.
+   GSAP animation: headline and CTA elements fade up in sequence on page load (not on scroll), with a light 80–100ms stagger between elements.
 
-3. **Masalah**
-   Menampilkan 2-3 statistik kunci dari proposal (23-48 juta ton per tahun, Rp213-551 triliun kerugian, 1,05 miliar ton food waste global) dalam bentuk angka besar dengan animasi count-up saat section masuk viewport.
-   Animasi GSAP: `ScrollTrigger` memicu count-up dan fade-in card statistik saat 40 persen section terlihat.
+3. **Problem**
+   Displays 2–3 key statistics from the proposal (23–48 million tons/year, Rp213–551 trillion in losses, 1.05 billion tons of global food waste) as large numbers with a count-up animation as the section enters the viewport.
+   GSAP animation: `ScrollTrigger` triggers the count-up and fade-in of stat cards once 40% of the section is visible.
 
-4. **Cara Kerja**
-   Timeline horizontal (desktop) atau vertikal (mobile) menampilkan 4 langkah: Donor posting surplus, sistem beri skor kelayakan, matching ke penerima terdekat, distribusi tercatat dengan QR.
-   Animasi GSAP: setiap step muncul berurutan dengan garis penghubung yang "tergambar" (stroke-dashoffset animation) mengikuti scroll progress.
+4. **How It Works**
+   Horizontal (desktop) or vertical (mobile) timeline showing 4 steps: donor posts surplus, system assigns a safety score, matching to the nearest recipient, distribution logged via QR.
+   GSAP animation: each step appears in sequence with a connecting line that "draws itself" (stroke-dashoffset animation) following scroll progress.
 
-5. **Fitur Utama**
-   Grid 3 kolom (desktop) berisi 5-6 fitur inti (Freshness Score, Smart Matching, QR Traceability, Impact Dashboard, Volunteer Routing), tiap kartu punya ikon Lucide, judul, dan deskripsi singkat.
-   Animasi GSAP: card fade-up dengan stagger saat scroll masuk, hover state mengangkat card ringan (translateY -4px + shadow).
+5. **Key Features**
+   3-column grid (desktop) with 5–6 core features (Freshness Score, Smart Matching, QR Traceability, Impact Dashboard, Volunteer Routing), each card with a Lucide icon, a title, and a short description.
+   GSAP animation: cards fade up with a stagger on scroll-in; hover state lifts the card slightly (translateY -4px + shadow).
 
-6. **Dampak / Bukti Lokal**
-   Menampilkan konteks lokal Solo Raya, bisa memuat kutipan singkat dari data pendukung proposal soal ekosistem food sharing yang sudah ada di Surakarta, diposisikan sebagai kolaborasi, bukan kompetisi.
+6. **Impact / Local Proof**
+   Highlights local Solo Raya context, and can include a short reference to supporting data from the proposal about the existing food-sharing ecosystem in Surakarta, framed as collaboration rather than competition.
 
-7. **CTA Akhir**
-   Ajakan mendaftar dengan dua jalur jelas (Donor / Relawan), background memakai Harvest Green Dark supaya kontras dengan section sebelumnya.
+7. **Final CTA**
+   Sign-up prompt with two clear paths (Donor / Volunteer), background using Harvest Green Dark for contrast against the previous section.
 
 8. **Footer**
-   Tautan penting, kontak tim, dan atribusi TIM REGEX.
+   Important links, team contact, and TIM REGEX attribution.
 
-### 5.2 Prinsip Animasi Scroll (GSAP)
+### 5.2 Scroll Animation Principles (GSAP)
 
-- Gunakan `ScrollTrigger` dengan `once: false` hanya untuk elemen dekoratif, dan `once: true` untuk elemen konten supaya tidak mengganggu saat user scroll naik-turun berulang.
-- Durasi animasi 400-700ms, easing `power2.out` untuk masuk, `power1.inOut` untuk elemen yang bergerak mengikuti scroll progress langsung.
-- Hindari animasi yang menahan scroll (scroll-jacking) atau membuat teks tidak terbaca sebelum animasi selesai. Semua teks penting harus tetap terbaca dari frame pertama, animasi hanya memperhalus kemunculan.
-- Hormati `prefers-reduced-motion`, matikan animasi non-esensial jika user mengaktifkan setting tersebut di device mereka.
+- Use `ScrollTrigger` with `once: false` only for decorative elements, and `once: true` for content elements so repeated scrolling up/down doesn't feel disruptive.
+- Animation duration 400–700ms, `power2.out` easing for entrances, `power1.inOut` for elements that move directly with scroll progress.
+- Avoid scroll-jacking or animations that make text unreadable before the animation finishes. All important text must be readable from the first frame — animation should only smooth its appearance.
+- Respect `prefers-reduced-motion`, and disable non-essential animation if the user has that setting enabled on their device.
 
 ---
 
-## 6. Autentikasi
+## 6. Authentication
 
 ### 6.1 Login
 
-Form sederhana: email/telepon dan password, opsi "lupa password", link ke halaman register. Setelah login, redirect ke `/app/dashboard` sesuai role.
+A simple form: email/phone and password, a "lupa password" (forgot password) option, and a link to the register page. After login, redirect to `/app/dashboard` based on role.
 
 ### 6.2 Register
 
-Register memakai pemilihan role di awal (Donor / Volunteer-Receiver / Pengelola Non-konsumsi), karena field yang dibutuhkan berbeda:
+Registration starts with a role selection (Donor / Volunteer-Receiver / Non-consumption Manager), since required fields differ per role:
 
-- **Donor**: nama usaha/individu, jenis (UMKM, restoran, katering, pasar, individu, lainnya), lokasi/alamat, nomor kontak.
-- **Volunteer/Receiver**: nama, jenis (relawan individu, komunitas, panti, dapur umum, posyandu), lokasi operasional, kapasitas perkiraan.
-- **Pengelola non-konsumsi**: nama, jenis pengelolaan (maggot, ternak, kompos, bank sampah organik), lokasi.
+- **Donor**: business/individual name, type ("UMKM", "Restoran", "Katering", "Pasar", "Individu", "Lainnya" — MSME, Restaurant, Caterer, Market, Individual, Other), location/address, contact number.
+- **Volunteer/Receiver**: name, type ("Relawan Individu", "Komunitas", "Panti", "Dapur Umum", "Posyandu" — Individual Volunteer, Community, Orphanage, Community Kitchen, Posyandu), operating location, estimated capacity.
+- **Non-consumption manager**: name, management type ("Maggot", "Ternak", "Kompos", "Bank Sampah Organik" — Maggot Cultivation, Livestock, Compost, Organic Waste Bank), location.
 
-Field minimal untuk MVP, cukup untuk matching dan verifikasi dasar, tidak perlu KYC berat. Verifikasi akun bisa berupa status "belum terverifikasi" yang tetap bisa dipakai terbatas, sambil admin melakukan verifikasi manual di background.
+Fields are kept minimal for the MVP — just enough for matching and basic verification, no heavy KYC. An account can carry an "unverified" status and still be usable with limited access, while an admin verifies it manually in the background.
+
+The contact number collected at registration doubles as the WhatsApp number for notifications (section 7.9). A checkbox during registration, checked by default, asks whether the user consents to receive WhatsApp alerts on that number — this can be changed later on the profile page.
 
 ---
 
-## 7. Spesifikasi Fitur Inti
+## 7. Core Feature Specifications
 
 ### 7.1 Donor Dashboard
 
-**Tujuan**: donor melihat status surplus yang sudah diposting dan cepat menambah surplus baru.
+**Purpose**: donors can see the status of surplus they've already posted and quickly add new surplus.
 
-**Isi**:
-- Ringkasan cepat di atas: jumlah batch aktif, total kg terselamatkan sepanjang waktu, jumlah pending pickup.
-- Tombol utama "Tambah Surplus Pangan", selalu terlihat (floating action button di mobile).
-- List/grid card batch surplus terbaru, tiap card menampilkan foto, nama makanan, badge status kelayakan, status distribusi (tersedia, diklaim, diambil, selesai), dan waktu tersisa sebelum batas layak konsumsi.
+**Contents**:
+- Quick summary at the top: number of active batches, total kg rescued all-time, number of pending pickups.
+- Primary "Tambah Surplus Pangan" (Add Food Surplus) button, always visible (floating action button on mobile).
+- List/grid of recent surplus batch cards, each showing photo, food name, freshness status badge, distribution status ("Tersedia", "Diklaim", "Diambil", "Selesai" — Available, Claimed, Picked Up, Completed), and time remaining before the food is no longer fit for consumption.
 
-### 7.2 Tambah Surplus Pangan
+### 7.2 Add Food Surplus
 
-**Tujuan**: form cepat, idealnya bisa diisi di bawah 90 detik di lapangan.
+**Purpose**: a quick form, ideally fillable in under 90 seconds in the field.
 
-**Field**:
-- Foto makanan (wajib, bisa multi foto)
-- Nama/jenis makanan
-- Kategori (matang, roti/bakery, buah potong, sayuran, bahan segar, lainnya)
-- Jumlah (dengan satuan: porsi, kg, box)
-- Lokasi (auto-detect GPS dengan opsi edit manual pin di peta)
-- Estimasi waktu layak konsumsi (date-time picker, atau pilihan cepat: 2 jam, 6 jam, 24 jam)
-- Kondisi tambahan (opsional: catatan bebas)
+**Fields**:
+- Food photo (required, multiple photos allowed)
+- Food name/type
+- Category ("Makanan Matang", "Roti/Bakery", "Buah Potong", "Sayuran", "Bahan Segar", "Lainnya" — Cooked Food, Bread/Bakery, Cut Fruit, Vegetables, Fresh Ingredients, Other)
+- Quantity (with unit: "porsi", "kg", "box" — servings, kg, box)
+- Location (auto-detected GPS, with an option to manually adjust the map pin)
+- Estimated time still fit for consumption (date-time picker, or quick options: 2 hours, 6 hours, 24 hours)
+- Additional condition notes (optional free text)
 
-**Perilaku**:
-- Setelah submit, sistem langsung menghitung Freshness and Risk Score dan menampilkan hasilnya (hijau/kuning/merah) sebelum konfirmasi final, supaya donor tahu ke mana arah distribusinya.
-- Draft otomatis tersimpan di local storage jika koneksi terputus saat pengisian, sesuai kebutuhan lapangan yang disebut di proposal.
+**Behavior**:
+- After submitting, the system immediately calculates the Freshness and Risk Score and shows the result (green/yellow/red) before final confirmation, so the donor knows where their post is headed.
+- A draft auto-saves to local storage if the connection drops mid-entry, matching the field conditions described in the proposal.
 
-### 7.3 Freshness and Risk Score (tampilan)
+#### 7.2.1 Recurring Surplus Mode
 
-Bukan fitur AI berat, tapi rule-based scoring yang ditampilkan sebagai badge dengan warna status (lihat 3.2). Tampilkan juga alasan singkat skor tersebut (contoh: "Kategori makanan matang, sisa waktu 3 jam, status: segera diambil"), supaya donor dan relawan paham logikanya, bukan kotak hitam.
+**Purpose**: donors with a repeating surplus pattern (canteens, event caterers) skip re-entering the same fields every time, pushing the "under 90 seconds" target even lower for their day-to-day use.
 
-### 7.4 Surplus Terdekat (Volunteer/Receiver)
+**Behavior**:
+- After a donor successfully submits a batch, the form offers a one-tap option: "Jadikan Surplus Rutin" (Make This a Recurring Surplus).
+- Saving a recurring template stores the reusable fields (food name/type, category, quantity, unit, location, default estimated-fit-for-consumption window) against the donor's account. Photos and any per-instance condition notes are always re-entered fresh, since those change batch to batch.
+- On a scheduled day/time, the donor gets a notification (in-app and/or WhatsApp, per 7.9) prompting them to confirm today's batch from the template. Confirming pre-fills the Add Food Surplus form; the donor only needs to add a photo, adjust quantity if it differs, and confirm — well under the 90-second target.
+- Templates are managed from `/app/surplus/recurring`: create, edit schedule (day-of-week + time), pause, or delete.
+- No new core table is required beyond a `surplus_template` table (donor_id, template fields, schedule) that the confirmation flow reads from and writes a normal `surplus_batch` row into — the rest of the pipeline (Freshness Score, matching, QR) is unchanged.
 
-**Tujuan**: relawan/penerima melihat surplus di sekitar mereka dan memutuskan cepat mana yang diklaim.
+### 7.3 Freshness and Risk Score (display)
 
-**Layout**: split view di desktop (peta di kanan, list di kiri), tab-switch peta/list di mobile.
+Not a heavy AI feature — a rule-based score displayed as a status-colored badge (see 3.2). Also show a short reason for the score (e.g. "Kategori makanan matang, sisa waktu 3 jam, status: segera diambil" — Cooked food category, 3 hours remaining, status: pick up soon), so donors and volunteers understand the logic rather than seeing a black box.
 
-**Peta**: marker berwarna sesuai status kelayakan, klik marker membuka preview card. Peta memakai Leaflet.js dengan OpenStreetMap sesuai stack di proposal.
+**Storage condition input**: the Add Food Surplus form (7.2) gets one optional field, "Disimpan di suhu ruang / kulkas" (Stored at room temperature / refrigerated), applicable mainly to the "Makanan Matang" (Cooked Food) and "Bahan Segar" (Fresh Ingredients) categories. This is a single additional variable in the existing rule-based formula, not a new scoring engine:
 
-**List**: diurutkan default berdasarkan kombinasi urgensi dan jarak (bukan jarak saja), dengan filter kategori makanan, status, dan radius jarak.
+- Cooked or fresh food left at room temperature has its safe time-window shortened relative to the same category refrigerated, reflecting the faster spoilage risk.
+- If the donor leaves the field blank, the system defaults to the current (room-temperature-equivalent) rule, so the feature is fully backward-compatible with existing scoring logic.
+- The reason text shown to the donor/volunteer includes this factor when it changes the outcome, e.g. "Kategori makanan matang, disimpan di suhu ruang, sisa waktu 3 jam, status: segera diambil" (Cooked food category, stored at room temperature, 3 hours remaining, status: pick up soon).
 
-**Aksi**: tombol "Klaim" langsung dari card atau dari detail batch, dengan konfirmasi ringan sebelum status berubah jadi "diklaim".
+### 7.4 Nearby Surplus (Volunteer/Receiver)
 
-### 7.5 Detail Batch dan QR Traceability
+**Purpose**: volunteers/recipients see surplus around them and decide quickly which to claim.
 
-Halaman detail per batch menampilkan riwayat lengkap: asal donor, waktu posting, skor kelayakan, siapa yang klaim, waktu pickup, penerima akhir, dan status akhir. QR code batch mengarah ke halaman publik `/scan/:qrcode` yang menampilkan ringkasan riwayat ini, bisa dipindai siapa saja untuk transparansi tanpa perlu login.
+**Layout**: split view on desktop (map on the right, list on the left), a tab-switch between map/list on mobile.
 
-### 7.6 Rute Pickup (Volunteer)
+**Map**: markers colored by freshness status; clicking a marker opens a preview card. Built with Leaflet.js and OpenStreetMap, per the proposal's stack.
 
-List pickup yang sudah diklaim relawan tersebut, diurutkan berdasarkan urgensi, dengan tombol buka rute di peta (bisa deep-link ke Google Maps untuk navigasi turn-by-turn, karena membangun routing engine sendiri di luar scope MVP).
+**List**: default-sorted by a combination of urgency and distance (not distance alone), with filters for food category, status, and distance radius.
+
+**Action**: a "Klaim" (Claim) button available directly from the card or from the batch detail page, with a light confirmation step before status changes to "Diklaim" (Claimed).
+
+### 7.5 Batch Detail and QR Traceability
+
+The batch detail page shows the full history: donor origin, post time, freshness score, who claimed it, pickup time, final recipient, and final status. Each batch's QR code links to the public `/scan/:qrcode` page, which shows a summary of this history — scannable by anyone, no login required, for full transparency.
+
+### 7.6 Pickup Route (Volunteer)
+
+A list of pickups the volunteer has claimed, sorted by urgency, with a button to open the route on a map (can deep-link to Google Maps for turn-by-turn navigation, since building a custom routing engine is out of scope for the MVP).
 
 ### 7.7 Impact Dashboard
 
-**Tujuan**: metrik yang bisa langsung dipakai untuk laporan ke pemerintah daerah atau juri hackathon.
+**Purpose**: metrics that can be used directly for reports to local government or hackathon judges.
 
-**Metrik utama** (kartu besar di atas):
-- Total kg pangan terselamatkan
-- Estimasi porsi makanan
-- Jumlah titik surplus aktif
-- Rata-rata waktu rescue (dari posting sampai diambil)
+**Key metrics** (large cards at the top):
+- Total kg of food rescued
+- Estimated number of meal portions
+- Number of active surplus points
+- Average rescue time (from posting to pickup)
 
-**Visualisasi pendukung**:
-- Grafik tren kg terselamatkan per minggu/bulan
-- Peta heatmap titik surplus (opsional, fase lanjutan)
-- Breakdown kategori makanan yang paling sering surplus
+**Supporting visualizations**:
+- Trend chart of kg rescued per week/month
+- Heatmap of surplus points (optional, later phase)
+- Breakdown of the food categories that most often go to surplus
 
-Role Pemantau melihat data agregat seluruh platform. Role Donor dan Volunteer melihat versi personal (kontribusi mereka sendiri) di halaman Riwayat, bukan di Impact Dashboard penuh.
+The Monitor role sees platform-wide aggregate data. Donor and Volunteer roles see their own personal contribution on the "Riwayat" (History) page, not the full Impact Dashboard.
 
-### 7.8 Riwayat
+### 7.8 History
 
-List transaksi/batch yang relevan dengan role user (donor: batch yang mereka posting, volunteer: batch yang mereka klaim/ambil), dengan filter status dan rentang tanggal.
+A list of transactions/batches relevant to the user's role (donor: batches they posted; volunteer: batches they claimed/picked up), with status and date-range filters.
 
-### 7.9 Notifikasi
+### 7.9 Notifications
 
-Notifikasi in-app minimal untuk MVP: surplus baru sesuai radius/kategori favorit (untuk volunteer), status batch berubah (untuk donor), pengingat batch mendekati batas waktu layak konsumsi. Push notification browser opsional di fase lanjutan.
+Minimal in-app notifications for the MVP: new surplus matching a volunteer's favorite radius/category, batch status changes (for donors), and reminders as a batch approaches its consumption deadline. Browser push notifications are optional, for a later phase.
+
+**WhatsApp fallback channel (Fonnte)**: since donors (culinary MSMEs) and volunteers in the field check WhatsApp far more often than an installed app, the same notification events also fire through the **Fonnte WhatsApp API** as a fallback channel alongside in-app notifications, not a replacement for them.
+
+- Trigger events: new surplus matching a volunteer's saved radius/category ("Ada surplus baru di dekat kamu"), a batch approaching its consumption deadline ("Batch kamu akan kedaluwarsa dalam 1 jam"), batch status changes for the donor (claimed, picked up, completed), and the Recurring Surplus confirmation prompt (7.2.1).
+- **Implementation**: the Express backend calls Fonnte's send-message REST endpoint (`POST https://api.fonnte.com/send`) with the device token in the request header, target phone number, and message body, triggered from the same event that already writes the in-app notification — no separate notification pipeline, just one more delivery target from the existing event.
+- Messages are short, plain text, and include a direct link back into the relevant app screen (e.g. the batch detail page) where possible.
+- Respects the WhatsApp opt-in collected at registration (6.2) and can be toggled off anytime from `/app/profile`.
+- Failure handling: if the Fonnte API call fails or times out, it fails silently from the user's perspective — the in-app notification has already been written, so no pickup-critical information depends solely on WhatsApp delivery.
+- Rate limiting: batched or throttled per user (e.g. max one WhatsApp message per event type per batch) to avoid spamming a donor or volunteer with duplicate alerts.
+
+### 7.10 Donor Streak and Contribution Badges
+
+**Purpose**: light gamification on the Donor side to encourage donors to keep posting surplus regularly, building on data that already exists rather than introducing new tracking.
+
+**Contents**:
+- Badges are computed from existing `distribution_log` (and `surplus_batch`) records via aggregation queries — no new core table is needed, only a small `donor_badge` (or view) that caches computed badge state so the dashboard doesn't recompute on every page load.
+- Example badges: "Donor Aktif 5 Minggu Berturut-turut" (Active Donor, 5 Weeks in a Row) for consecutive weekly posting, and "Top Donor Bulan Ini" (Top Donor This Month) for the highest kg-rescued contribution in the current month.
+- Shown as a small badge strip on the Donor Dashboard (7.1) summary area, with a dedicated `/app/badges` page listing all earned and in-progress badges plus streak progress.
+- Badge state recalculates on a scheduled job (e.g. nightly) rather than in real time, since streaks and monthly rankings don't need to update instantly.
+- Purely motivational — badges have no effect on matching priority, Freshness Score, or any other functional part of the system, keeping scope contained.
+
+### 7.11 Post-Pickup Rating and Feedback
+
+**Purpose**: a lightweight feedback loop after a batch reaches "Selesai" (Completed) status, used both to recalibrate the Freshness and Risk Score over time and as field-validation data (per proposal section 4.9).
+
+**Behavior**:
+- When a batch's status changes to "Selesai", the volunteer/receiver who completed the pickup sees one short prompt on the batch detail page (and optionally via the same in-app/WhatsApp notification channel): "Apakah kondisi makanan sesuai deskripsi?" (Did the food's condition match the description?), answered with a thumbs up/down or a 1–5 scale.
+- The response is stored against the batch record (a `pickup_rating` field on the existing distribution/batch tables — no new table required) alongside the batch's category, storage condition (7.3), and elapsed time at pickup.
+- Feedback is optional and single-tap, so it doesn't add friction to the completion flow.
+- Aggregated ratings feed two places: (1) the Monitor's Impact Dashboard (7.7), as a simple "kesesuaian kondisi" (condition-match) quality metric alongside kg rescued, and (2) a periodic manual review of the Freshness Score's rule thresholds — the MVP itself stays rule-based, but this data collection lays the groundwork for tuning those rules with real field outcomes over time, without requiring a live ML pipeline at MVP scope.
 
 ---
 
-## 8. Design System, Komponen Utama
+## 8. Design System — Key Components
 
-| Komponen | Catatan Implementasi |
+| Component | Implementation Notes |
 |---|---|
-| Button | 3 varian: primary (Harvest Green solid), secondary (outline), ghost (text only). Ukuran sm/md/lg. Radius 8px. |
-| Status Badge | Pill shape, warna sesuai 3.2, selalu dipasangkan dengan label teks, tidak hanya warna, untuk aksesibilitas |
-| Card | Radius 12-16px, shadow tipis, padding 16-24px |
-| Input/Form Field | Label di atas field, border 1px Mist, focus state Harvest Green, error state Alert Red dengan pesan di bawah field |
-| Map Marker | Custom marker Lucide-style icon dengan warna status, ukuran membesar saat hover/selected |
-| Navigation Sidebar (desktop) / Bottom Nav (mobile) | Icon Lucide + label, item aktif memakai Harvest Green Light sebagai background |
-| Modal | Radius 24px, overlay dengan backdrop blur ringan |
-| Toast/Notification | Muncul dari atas kanan (desktop) atau atas (mobile), auto-dismiss 4-5 detik |
-| Empty State | Ilustrasi line-art sederhana + copy yang membantu, bukan sekadar "tidak ada data" |
+| Button | 3 variants: primary (solid Harvest Green), secondary (outline), ghost (text only). Sizes sm/md/lg. 8px radius. |
+| Status Badge | Pill shape, colored per section 3.2, always paired with a text label — not color alone — for accessibility |
+| Card | 12–16px radius, light shadow, 16–24px padding |
+| Input/Form Field | Label above the field, 1px Mist border, Harvest Green focus state, Alert Red error state with a message below the field |
+| Map Marker | Custom Lucide-style marker colored by status, enlarges on hover/select |
+| Navigation Sidebar (desktop) / Bottom Nav (mobile) | Lucide icon + label, active item uses Harvest Green Light as background |
+| Modal | 24px radius, overlay with light backdrop blur |
+| Toast/Notification | Appears top-right (desktop) or top (mobile), auto-dismisses after 4–5 seconds |
+| Empty State | Simple line-art illustration + helpful copy, not just "no data" |
+| Achievement Badge | Compact chip/icon with label, used for donor streak and contribution badges (7.10); visually distinct from the Status Badge (freshness/distribution status) so the two are never confused |
+| Rating Prompt | Single-question inline card (thumbs up/down or 1–5 scale), shown once on the batch detail page after "Selesai" status (7.11) |
 
 ---
 
 ## 9. Responsiveness
 
-Breakpoint yang disarankan (mengikuti konvensi Tailwind CSS, sesuai stack di proposal):
+Recommended breakpoints (following Tailwind CSS conventions, matching the proposal's stack):
 
-| Breakpoint | Lebar | Perilaku Utama |
+| Breakpoint | Width | Main Behavior |
 |---|---|---|
-| Mobile | < 640px | Bottom navigation, single column, floating action button untuk aksi utama, peta dan list jadi tab terpisah |
-| Tablet | 640-1024px | Sidebar bisa collapsed jadi icon-only, grid 2 kolom untuk card |
-| Desktop | > 1024px | Sidebar penuh, split view peta/list, grid 3 kolom untuk landing page fitur |
+| Mobile | < 640px | Bottom navigation, single column, floating action button for the primary action, map and list become separate tabs |
+| Tablet | 640–1024px | Sidebar can collapse to icon-only, 2-column card grid |
+| Desktop | > 1024px | Full sidebar, split map/list view, 3-column feature grid on the landing page |
 
-Mobile adalah prioritas utama untuk alur Donor dan Volunteer, karena field kerja terjadi di lapangan lewat HP. Desktop diprioritaskan untuk role Pemantau/Admin yang lebih banyak melihat dashboard dan data agregat.
+Mobile is the top priority for the Donor and Volunteer flows, since field work happens on phones. Desktop is prioritized for the Monitor/Admin role, which relies more on dashboards and aggregate data.
 
 ---
 
 ## 10. Tech Stack
 
-Mengikuti stack yang sudah ditetapkan di proposal, supaya konsisten dengan dokumen kompetisi:
+Follows the stack already defined in the proposal, to stay consistent with the competition documents:
 
-| Lapisan | Teknologi |
+| Layer | Technology |
 |---|---|
 | Frontend | Next.js, Tailwind CSS |
-| Animasi | GSAP dengan ScrollTrigger |
-| Ikon | Lucide Icons |
+| Animation | GSAP with ScrollTrigger |
+| Icons | Lucide Icons |
 | Backend/API | Node.js / Express.js |
-| Database dan Auth | Supabase |
-| Peta | Leaflet.js dengan OpenStreetMap |
+| Database and Auth | Supabase |
+| Maps | Leaflet.js with OpenStreetMap |
 | QR | QR Code Generator library |
 | Offline draft | LocalStorage |
+| WhatsApp notifications | Fonnte API (`api.fonnte.com`), called server-side from Node.js/Express |
 
-Tambahan yang disarankan khusus untuk implementasi website:
+Additional recommendations specific to the website implementation:
 
-- **Font loading**: gunakan `next/font` untuk Instrument Serif dan Inter, supaya tidak ada flash of unstyled text.
-- **State management ringan**: cukup React Context atau Zustand untuk state role dan filter, tidak perlu Redux untuk scope MVP.
-- **Form handling**: React Hook Form dengan validasi Zod, terutama untuk form Tambah Surplus yang punya banyak field.
-
----
-
-## 11. Rencana Implementasi Bertahap
-
-### Phase 0, Setup dan Design Foundation (target 2-3 hari)
-- Setup project Next.js + Tailwind, konfigurasi design token (warna, tipografi, spacing) sesuai bagian 3.
-- Setup Supabase project, skema database dasar (users, surplus_batch, distribution_log).
-- Setup komponen dasar design system (button, input, card, badge) sebagai reusable component.
-- Deliverable: Storybook sederhana atau halaman `/design-system` internal untuk cek konsistensi komponen.
-
-### Phase 1, Landing Page dan Autentikasi (target 3-4 hari)
-- Bangun seluruh section landing page sesuai bagian 5, termasuk animasi GSAP.
-- Bangun halaman Login dan Register multi-role.
-- Setup auth flow dengan Supabase Auth, termasuk role assignment saat register.
-- Deliverable: landing page hidup, user bisa daftar dan login, redirect ke dashboard kosong sesuai role.
-
-### Phase 2, Alur Donor Inti (target 4-5 hari)
-- Donor Dashboard dengan ringkasan dan list batch.
-- Form Tambah Surplus Pangan lengkap dengan upload foto, GPS, dan kalkulasi Freshness and Risk Score.
-- Halaman Detail Batch (versi donor).
-- Deliverable: donor bisa posting surplus dari nol sampai muncul dengan status kelayakan yang benar.
-
-### Phase 3, Alur Volunteer dan Matching (target 4-5 hari)
-- Halaman Surplus Terdekat dengan peta Leaflet dan list, termasuk filter dan sorting.
-- Logika smart matching dasar (jarak, urgensi, kapasitas, kategori).
-- Aksi klaim dan perubahan status distribusi (tersedia, diklaim, diambil, selesai).
-- Halaman Rute Pickup.
-- Deliverable: relawan bisa menemukan surplus terdekat, klaim, dan menyelesaikan alur pickup end-to-end.
-
-### Phase 4, QR Traceability dan Impact Dashboard (target 3-4 hari)
-- Generate QR per batch, halaman publik `/scan/:qrcode`.
-- Impact Dashboard dengan metrik utama dan visualisasi tren.
-- Halaman Riwayat untuk semua role.
-- Deliverable: satu batch bisa dilacak penuh dari posting sampai selesai lewat QR, dan dashboard dampak menampilkan angka yang benar dari data real.
-
-### Phase 5, Polish, Responsif, dan Aksesibilitas (target 3 hari)
-- QA responsif penuh di breakpoint mobile, tablet, desktop.
-- Audit kontras warna, terutama badge status dan teks di atas warna brand.
-- Perhalus animasi GSAP, cek performa scroll di device low-end.
-- Empty state, loading state, dan error state untuk semua halaman utama.
-- Deliverable: aplikasi terasa rapi dan konsisten di semua device, siap untuk demo.
-
-### Phase 6, Demo Preparation (target 1-2 hari)
-- Seed data demo yang realistis (beberapa donor, beberapa batch dengan status berbeda, riwayat distribusi yang cukup untuk mengisi impact dashboard).
-- Skenario demo end-to-end yang sudah dilatih, sesuai indikator keberhasilan MVP di proposal (bagian 4.10).
-- Deliverable: aplikasi siap dipresentasikan tanpa data kosong atau state aneh saat live demo.
+- **Font loading**: use `next/font` for Instrument Serif and Inter, to avoid a flash of unstyled text.
+- **Lightweight state management**: React Context or Zustand is enough for role and filter state — Redux isn't needed at MVP scope.
+- **Form handling**: React Hook Form with Zod validation, especially for the Add Surplus form, which has many fields.
+- **WhatsApp integration**: keep the Fonnte device token server-side only (environment variable), never exposed to the client. Wrap the send-message call in a small internal helper (e.g. `sendWhatsAppNotification()`) so it's called from the same backend event handlers that already create in-app notifications, rather than duplicating trigger logic.
 
 ---
 
-## 12. Kriteria Sukses per Fase
+## 11. Phased Implementation Plan
 
-Sejalan dengan Indikator Keberhasilan MVP di proposal:
+### Phase 0 — Setup and Design Foundation (target: 2–3 days)
+- Set up the Next.js + Tailwind project, configure design tokens (color, typography, spacing) per section 3.
+- Set up the Supabase project and base database schema (users, surplus_batch, distribution_log, surplus_template, donor_badge/badge view, pickup_rating field).
+- Build base design-system components (button, input, card, badge) as reusable components.
+- Deliverable: a simple Storybook or an internal `/design-system` page to check component consistency.
 
-- Donor dapat menambahkan satu batch surplus pangan sampai statusnya tampil di peta.
-- Sistem berhasil memberi status kelayakan awal: hijau, kuning, atau merah, dengan alasan yang ditampilkan.
-- Volunteer/receiver dapat melakukan klaim dan mengubah status distribusi sampai selesai.
-- QR batch dapat dipindai dan menampilkan riwayat singkat distribusi tanpa perlu login.
-- Dashboard menampilkan total kilogram pangan terselamatkan, estimasi porsi, dan rata-rata waktu rescue secara akurat dari data yang ada.
-- Landing page dan alur demo bisa menjelaskan nilai sosial, teknis, dan dampak dalam waktu presentasi yang singkat.
+### Phase 1 — Landing Page and Authentication (target: 3–4 days)
+- Build all landing page sections per section 5, including GSAP animation.
+- Build the Login and multi-role Register pages.
+- Set up the auth flow with Supabase Auth, including role assignment at registration.
+- Deliverable: a live landing page; users can register and log in, then get redirected to an empty dashboard matching their role.
+
+### Phase 2 — Core Donor Flow (target: 5–6 days)
+- Donor Dashboard with summary and batch list.
+- Full Add Food Surplus form with photo upload, GPS, storage condition input (room temperature/fridge, 7.3), and Freshness and Risk Score calculation.
+- Recurring Surplus template creation, scheduling, and one-tap confirmation flow (7.2.1).
+- Batch Detail page (donor view).
+- Deliverable: a donor can post surplus from scratch through to it appearing with the correct freshness status, and can save/reuse a Recurring Surplus template.
+
+### Phase 3 — Volunteer Flow and Matching (target: 4–5 days)
+- Nearby Surplus page with Leaflet map and list, including filtering and sorting.
+- Basic smart-matching logic (distance, urgency, capacity, category).
+- Claim action and distribution status changes (available, claimed, picked up, completed).
+- Pickup Route page.
+- Deliverable: a volunteer can find nearby surplus, claim it, and complete the pickup flow end to end.
+
+### Phase 4 — QR Traceability, Impact Dashboard, and Feedback Loop (target: 4–5 days)
+- QR generation per batch, public `/scan/:qrcode` page.
+- Post-Pickup Rating prompt on the batch detail page once a batch reaches "Selesai" (7.11), stored on the batch record.
+- Impact Dashboard with key metrics, trend visualizations, and the condition-match quality metric from pickup ratings.
+- History page for all roles.
+- Deliverable: a batch can be fully traced from posting to completion via QR, a volunteer can leave a post-pickup rating, and the impact dashboard shows accurate numbers from real data.
+
+### Phase 4.5 — WhatsApp Notifications and Donor Badges (target: 2–3 days)
+- Integrate Fonnte API server-side; wire the existing notification events (new nearby surplus, deadline reminders, status changes, recurring surplus confirmation) to also send via WhatsApp, respecting the opt-in from registration/profile.
+- Build the badge aggregation query/job over `distribution_log` and the `/app/badges` page, plus the badge strip on the Donor Dashboard.
+- Deliverable: a donor/volunteer with WhatsApp notifications enabled receives real WhatsApp alerts for key events, and a donor can see their streak and contribution badges.
+
+### Phase 5 — Polish, Responsiveness, and Accessibility (target: 3 days)
+- Full responsive QA across mobile, tablet, and desktop breakpoints.
+- Color contrast audit, especially for status badges and text over brand colors.
+- Refine GSAP animations, check scroll performance on low-end devices.
+- Empty, loading, and error states for all main pages.
+- Deliverable: the app feels polished and consistent across devices, ready for demo.
+
+### Phase 6 — Demo Preparation (target: 1–2 days)
+- Seed realistic demo data (several donors, several batches at different statuses, enough distribution history to populate the impact dashboard).
+- Rehearsed end-to-end demo scenario, matching the MVP success indicators in the proposal (section 4.10).
+- Deliverable: the app is ready to present with no empty data or odd states during the live demo.
 
 ---
 
-## 13. Catatan Non-Fungsional
+## 12. Success Criteria per Phase
 
-- **Performa**: landing page ditarget Lighthouse Performance di atas 85 pada koneksi 4G, mengingat animasi GSAP dan gambar perlu dioptimasi (lazy load, image compression).
-- **Aksesibilitas dasar**: kontras warna status minimal memenuhi WCAG AA, semua elemen interaktif bisa diakses keyboard, alt text untuk semua gambar penting.
-- **Keamanan dasar**: validasi input di server (bukan hanya client), rate limiting sederhana untuk endpoint submit surplus supaya tidak disalahgunakan.
-- **Data minim**: sesuai batasan di proposal, jangan menyimpan data penerima yang lebih detail dari yang dibutuhkan untuk matching dan pelacakan dasar.
+In line with the MVP Success Indicators in the proposal:
+
+- A donor can add a food surplus batch through to its status appearing on the map.
+- The system successfully assigns an initial freshness status — green, yellow, or red — with a visible reason.
+- A volunteer/receiver can claim a batch and update its distribution status through to completion.
+- A batch's QR code can be scanned and shows a short distribution history, without requiring login.
+- The dashboard accurately shows total kg of food rescued, estimated portions, and average rescue time, based on real data.
+- A donor can save a Recurring Surplus template and confirm a new batch from it in well under the 90-second target.
+- A donor or volunteer with WhatsApp notifications enabled receives a WhatsApp message (via Fonnte) for at least the "new nearby surplus" and "batch status change" events, in addition to the in-app notification.
+- A donor's streak/contribution badges on `/app/badges` correctly reflect their `distribution_log` history.
+- A volunteer can submit a post-pickup rating after a batch is completed, and that rating is visible in the batch's history and reflected in the Impact Dashboard's quality metric.
+- The landing page and demo flow can explain the social, technical, and impact value within a short pitch window.
+
+---
+
+## 13. Non-Functional Notes
+
+- **Performance**: landing page targets a Lighthouse Performance score above 85 on a 4G connection, given that GSAP animation and images need optimization (lazy loading, image compression).
+- **Basic accessibility**: status colors meet WCAG AA contrast at minimum, all interactive elements are keyboard-accessible, and alt text is provided for all important images.
+- **Basic security**: input validation happens server-side (not just client-side), with simple rate limiting on the surplus-submission endpoint to prevent abuse.
+- **Minimal data**: per the proposal's constraints, don't store more detailed recipient data than what's needed for basic matching and tracking.
+- **Third-party API secrets**: the Fonnte device token is stored as a server-side environment variable and never exposed to the client bundle or API responses.
+- **Graceful degradation**: WhatsApp delivery via Fonnte is a fallback, not a dependency — if the Fonnte API is down or the user hasn't opted in, the in-app notification and core flow must still work unaffected.
