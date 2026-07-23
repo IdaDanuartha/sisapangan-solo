@@ -41,6 +41,33 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Route-level Role-Based Access Control (RBAC)
+  if (user && request.nextUrl.pathname.startsWith("/app")) {
+    const role = user.user_metadata?.role || "donor";
+    const pathname = request.nextUrl.pathname;
+
+    // 1. /app/users -> Admin only
+    if (pathname.startsWith("/app/users") && role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/app/dashboard";
+      return NextResponse.redirect(url);
+    }
+
+    // 2. /app/surplus/add -> Donor & Admin only
+    if (pathname.startsWith("/app/surplus/add") && role !== "donor" && role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/app/dashboard";
+      return NextResponse.redirect(url);
+    }
+
+    // 3. /app/surplus/nearby -> Volunteer, Non-consumption, Admin, Monitor only
+    if (pathname.startsWith("/app/surplus/nearby") && role === "donor") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/app/surplus";
+      return NextResponse.redirect(url);
+    }
+  }
+
   return supabaseResponse;
 }
 

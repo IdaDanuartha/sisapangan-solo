@@ -61,12 +61,14 @@ const navByRole: Record<Role, NavItem[]> = {
     { href: "/app/profile", label: "Profil", icon: User },
   ],
   monitor: [
-    { href: "/app/dashboard", label: "Dashboard Dampak", icon: BarChart3 },
+    { href: "/app/dashboard", label: "Dashboard Ringkasan", icon: LayoutDashboard },
+    { href: "/app/impact", label: "Dashboard Dampak", icon: BarChart3 },
     { href: "/app/surplus/nearby", label: "Data Surplus", icon: MapPin },
     { href: "/app/profile", label: "Profil", icon: User },
   ],
   admin: [
     { href: "/app/dashboard", label: "Dashboard Admin", icon: LayoutDashboard },
+    { href: "/app/impact", label: "Dashboard Dampak", icon: BarChart3 },
     { href: "/app/users", label: "Kelola Pengguna", icon: Users },
     { href: "/app/drop-off", label: "Manajemen Drop-off", icon: Map },
     { href: "/app/surplus/nearby", label: "Lihat Semua Surplus", icon: MapPin },

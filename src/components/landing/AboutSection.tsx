@@ -15,7 +15,7 @@ const stats = [
     value: 137,
     suffix: "+",
     label: "Donor & Mitra Aktif",
-    desc: "UMKM, restoran, dan non-consumption partner",
+    desc: "UMKM, restoran, relawan, & pengelola non-konsumsi",
     solid: false,
   },
   {
@@ -143,7 +143,7 @@ export function AboutSection() {
           <div className="flex flex-col justify-center gap-3">
             <p className="text-[#5B655D] leading-relaxed">
               SisaPangan Solo adalah platform koordinasi digital yang menghubungkan
-              UMKM kuliner, relawan, dan komunitas penerima manfaat di Solo Raya
+              UMKM kuliner, relawan, penerima manfaat, dan pengelola non-konsumsi di Solo Raya
               dalam satu alur penyelamatan pangan yang terverifikasi dan transparan.
             </p>
             <p className="text-[#5B655D] leading-relaxed">
@@ -157,7 +157,7 @@ export function AboutSection() {
         {/* Full-width image */}
         <div className="relative w-full h-64 sm:h-80 rounded-2xl overflow-hidden mb-10">
           <Image
-            src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80&fit=crop"
+            src="/images/about-img.jpeg"
             alt="Tim SisaPangan Solo bergerak bersama mendistribusikan pangan"
             fill
             className="object-cover"

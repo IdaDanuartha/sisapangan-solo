@@ -4,12 +4,12 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { Building2, Users, Heart, ShieldCheck } from "lucide-react";
+import { Building2, Users, Sprout, ShieldCheck } from "lucide-react";
 
 const roles = [
   {
     icon: Building2,
-    title: "Donor",
+    title: "Donor Pangan",
     description:
       "Restoran, UMKM kuliner, katering, dan ritel yang melaporkan surplus makanan layak konsumsi setiap hari.",
     color: "#2F6E4F",
@@ -17,25 +17,25 @@ const roles = [
   },
   {
     icon: Users,
-    title: "Volunteer",
+    title: "Volunteer & Penerima Manfaat",
     description:
-      "Relawan yang menjemput surplus dari donor dan mengantarkan ke non-consumption partner dengan rute teroptimasi.",
+      "Relawan dan penerima (panti asuhan, posyandu, dapur umum) yang menjemput & mendistribusikan pangan layak konsumsi.",
     color: "#E88C2D",
     bg: "#FBEBD8",
   },
   {
-    icon: Heart,
-    title: "Non-Consumption Partner",
+    icon: Sprout,
+    title: "Pengelola Non-Konsumsi",
     description:
-      "Panti asuhan, posyandu, dapur umum, dan komunitas penerima yang mendapatkan distribusi pangan terverifikasi.",
-    color: "#C1502E",
-    bg: "#FAEAEA",
+      "Mitra pengolah sisa pangan non-konsumsi manusia untuk pakan ternak, budidaya maggot (BSF), atau pembuatan kompos.",
+    color: "#059669",
+    bg: "#E6F4EA",
   },
   {
     icon: ShieldCheck,
     title: "Monitor & Admin",
     description:
-      "Tim yang memverifikasi distribusi, mengelola laporan dampak, dan menjalankan sistem gamifikasi badge.",
+      "Tim yang memverifikasi kelayakan pangan, mengelola rute pickup, serta memantau dampak lingkungan & sosial.",
     color: "#2F6E4F",
     bg: "#E4F0E8",
   },
@@ -99,7 +99,7 @@ export function RolesSection() {
           {/* Image */}
           <div className="relative rounded-2xl overflow-hidden h-[400px] lg:h-[480px]">
             <Image
-              src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&q=80&fit=crop"
+              src="/images/role-contribution.jpeg"
               alt="Para peran dalam ekosistem SisaPangan Solo"
               fill
               className="object-cover"

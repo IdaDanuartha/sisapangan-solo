@@ -17,6 +17,9 @@ const ibmPlexSans = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://sisapangan-solo.vercel.app"
+  ),
   title: {
     default: "SisaPangan Solo | Platform Penyelamatan Pangan Solo Raya",
     template: "%s | SisaPangan Solo",
@@ -33,13 +36,25 @@ export const metadata: Metadata = {
     "kurangi sampah makanan",
   ],
   authors: [{ name: "SisaPangan Solo Team" }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  icons: {
+    icon: "/images/logo_only.png",
+    shortcut: "/images/logo_only.png",
+    apple: "/images/logo_only.png",
+  },
   openGraph: {
     title: "SisaPangan Solo | Platform Penyelamatan Pangan Solo Raya",
     description:
       "Hubungkan donor pangan, relawan, dan penerima manfaat untuk meminimalkan food waste di kawasan Solo Raya secara aman dan terpantau.",
-    url: "/",
+    url: "https://sisapangan-solo.vercel.app",
     siteName: "SisaPangan Solo",
+    images: [
+      {
+        url: "/images/logo_full.png",
+        width: 1200,
+        height: 630,
+        alt: "SisaPangan Solo Logo",
+      },
+    ],
     locale: "id_ID",
     type: "website",
   },
@@ -48,6 +63,7 @@ export const metadata: Metadata = {
     title: "SisaPangan Solo | Platform Penyelamatan Pangan Solo Raya",
     description:
       "Donasikan makanan surplus, koordinasikan relawan, dan salurkan ke masyarakat yang membutuhkan di Solo Raya.",
+    images: ["/images/logo_full.png"],
   },
   robots: {
     index: true,

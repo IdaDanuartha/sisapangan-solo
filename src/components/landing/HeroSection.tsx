@@ -8,11 +8,11 @@ import { ArrowRight, CheckCircle, LeafyGreen, HandHeart, BarChart3 } from "lucid
 // Unsplash photos — food rescue / community / vegetable market context
 const PHOTOS = {
   // Tall left card — donor handing over food at market
-  donor: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=600&q=80&fit=crop",
+  donor: "/images/hero/donor.jpeg",
   // Middle top card — volunteer packing food donations
-  volunteer: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&q=80&fit=crop",
+  volunteer: "/images/hero/volunteer.jpeg",
   // Right bottom card — community receiving meals
-  community: "https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80&fit=crop",
+  community: "/images/hero/community.jpeg",
 };
 
 export function HeroSection() {

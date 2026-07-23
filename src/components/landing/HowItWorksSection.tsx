@@ -16,7 +16,7 @@ const steps = [
     number: "02",
     title: "Volunteer Menjemput & Mendistribusikan",
     description:
-      "Volunteer terdekat mendapat notifikasi, mengambil surplus dengan rute teroptimasi, dan mengantar ke Non-Consumption Partner.",
+      "Volunteer terdekat mendapat notifikasi, mengambil surplus dengan rute teroptimasi, lalu mengantar ke Penerima Manfaat atau Pengelola Non-Konsumsi.",
   },
   {
     number: "03",
@@ -105,7 +105,7 @@ export function HowItWorksSection() {
           <div className="grid grid-cols-2 gap-4 h-64">
             <div className="relative rounded-2xl overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80&fit=crop"
+                src="/images/how-it-works/1.jpeg"
                 alt="Donor menyerahkan surplus pangan di pasar"
                 fill
                 className="object-cover object-top"
@@ -115,7 +115,7 @@ export function HowItWorksSection() {
             </div>
             <div className="relative rounded-2xl overflow-hidden">
               <Image
-                src="https://images.unsplash.com/photo-1578357078586-491adf1aa5ba?w=800&q=80&fit=crop"
+                src="/images/how-it-works/2.jpeg"
                 alt="Volunteer mengantar makanan ke penerima manfaat"
                 fill
                 className="object-cover object-center"
@@ -155,7 +155,7 @@ export function HowItWorksSection() {
                 Jadi Bagian dari<br />Gerakan Food Rescue
               </h3>
               <p className="text-sm text-white/70 leading-relaxed">
-                Daftarkan diri sebagai Donor, Volunteer, atau Non-Consumption Partner
+                Daftarkan diri sebagai Donor, Volunteer, Penerima Manfaat, atau Pengelola Non-Konsumsi
                 dan mulai berkontribusi hari ini.
               </p>
             </div>

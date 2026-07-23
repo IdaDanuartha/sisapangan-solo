@@ -14,7 +14,7 @@ const faqs = [
     id: "faq-2",
     question: "Apa saja standar keamanan pangan yang berlaku di platform ini?",
     answer:
-      "Setiap posting surplus dievaluasi dengan sistem Freshness & Risk Score (hijau/kuning/merah) berdasarkan jenis makanan, kondisi penyimpanan, dan sisa waktu layak konsumsi. Posting dengan skor merah otomatis tidak diteruskan untuk konsumsi manusia, tapi bisa dialihkan ke non-consumption partner seperti pakan ternak atau kompos.",
+      "Setiap posting surplus dievaluasi dengan sistem Freshness & Risk Score (hijau/kuning/merah) berdasarkan jenis makanan, kondisi penyimpanan, dan sisa waktu layak konsumsi. Posting dengan skor merah otomatis tidak diteruskan untuk konsumsi manusia, melainkan dialihkan ke Pengelola Non-Konsumsi untuk pakan ternak, budidaya maggot (BSF), atau pembuatan kompos.",
   },
   {
     id: "faq-3",

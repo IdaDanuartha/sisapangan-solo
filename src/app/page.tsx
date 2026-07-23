@@ -9,7 +9,7 @@ import { CtaBannerSection, Footer } from "@/components/landing/CtaFooter";
 
 export const metadata: Metadata = {
   title:
-    "SisaPangan Solo | Platform Koordinasi Penyelamatan Pangan Solo Raya",
+    "SisaPangan Solo | Platform Penyelamatan Pangan Solo Raya",
   description:
     "Platform digital yang menghubungkan donor pangan (UMKM, restoran, katering), relawan, dan penerima manfaat untuk mengurangi pemborosan makanan di kawasan Solo Raya.",
   keywords: [
@@ -24,8 +24,25 @@ export const metadata: Metadata = {
     title: "SisaPangan Solo | Pangan Sisa, Bukan Sampah.",
     description:
       "Menghubungkan UMKM kuliner, relawan, dan penerima manfaat dalam satu alur digital penyelamatan pangan.",
+    url: "https://sisapangan-solo.vercel.app",
+    siteName: "SisaPangan Solo",
+    images: [
+      {
+        url: "/images/logo_full.png",
+        width: 1200,
+        height: 630,
+        alt: "SisaPangan Solo Logo",
+      },
+    ],
     locale: "id_ID",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SisaPangan Solo | Pangan Sisa, Bukan Sampah.",
+    description:
+      "Menghubungkan UMKM kuliner, relawan, dan penerima manfaat dalam satu alur digital penyelamatan pangan.",
+    images: ["/images/logo_full.png"],
   },
 };
 

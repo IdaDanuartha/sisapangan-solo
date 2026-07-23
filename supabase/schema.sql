@@ -220,6 +220,32 @@ CREATE POLICY "notif_log: admin full control" ON notification_log USING (
 );
 
 -- =====================================================
+-- USER ACTIVITY LOG
+-- Audit trail for user activities & platform monitoring
+-- =====================================================
+CREATE TABLE IF NOT EXISTS user_activity_log (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_name TEXT,
+  role TEXT NOT NULL,
+  action TEXT NOT NULL,         -- 'login', 'claim_batch', 'complete_batch', 'add_surplus', 'update_profile', 'verify_user', etc.
+  resource_type TEXT,           -- 'surplus_batch', 'profile', 'user', etc.
+  resource_id UUID,
+  metadata JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS user_act_log_user_id_idx ON user_activity_log(user_id);
+CREATE INDEX IF NOT EXISTS user_act_log_role_idx ON user_activity_log(role);
+CREATE INDEX IF NOT EXISTS user_act_log_created_at_idx ON user_activity_log(created_at);
+
+ALTER TABLE user_activity_log ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "activity_log: auth users can insert" ON user_activity_log
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "activity_log: anyone can read" ON user_activity_log
+  FOR SELECT USING (TRUE);
+
+-- =====================================================
 -- BENEFICIARIES (Drop-off locations)
 -- =====================================================
 CREATE TABLE IF NOT EXISTS beneficiaries (
