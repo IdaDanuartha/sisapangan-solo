@@ -47,6 +47,12 @@ export function MonitoringClient({ role }: { role: string }) {
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Filter states
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [filterStartDate, setFilterStartDate] = useState<string>("");
+  const [filterEndDate, setFilterEndDate] = useState<string>("");
+
+
   // Clear Activity Log states
   const [showClearLogModal, setShowClearLogModal] = useState(false);
   const [clearMode, setClearMode] = useState<"all" | "range">("all");
@@ -196,6 +202,29 @@ export function MonitoringClient({ role }: { role: string }) {
     roleActivityMap[r] = (roleActivityMap[r] || 0) + 1;
   });
 
+  const filteredLogs = activityLogs.filter((log) => {
+    // Role filter
+    if (selectedRole && log.role !== selectedRole) {
+      return false;
+    }
+    
+    // Start date filter
+    if (filterStartDate) {
+      const start = new Date(filterStartDate);
+      start.setHours(0, 0, 0, 0);
+      if (new Date(log.created_at) < start) return false;
+    }
+
+    // End date filter
+    if (filterEndDate) {
+      const end = new Date(filterEndDate);
+      end.setHours(23, 59, 59, 999);
+      if (new Date(log.created_at) > end) return false;
+    }
+
+    return true;
+  });
+
   return (
     <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6">
       {/* Header */}
@@ -289,10 +318,19 @@ export function MonitoringClient({ role }: { role: string }) {
                   admin: "Admin",
                   monitor: "Monitor"
                 };
+                                const isActive = selectedRole === rRole;
                 return (
-                  <div key={rRole} className="p-3 rounded-[12px] bg-[#F4F6F3]/50 border border-[#E4F0E8]">
+                  <div
+                    key={rRole}
+                    onClick={() => setSelectedRole(isActive ? null : rRole)}
+                    className={`p-3 rounded-[12px] border transition-all cursor-pointer select-none ${
+                      isActive
+                        ? "bg-[#EBF5EE] border-[#2F6E4F] shadow-xs"
+                        : "bg-[#F4F6F3]/50 border-[#E4F0E8] hover:border-[#2F6E4F]/40 hover:bg-[#F4F6F3]"
+                    }`}
+                  >
                     <div className="flex justify-between items-center text-[10px] font-bold">
-                      <span className="text-[#5B655D]">{labels[rRole] || rRole}</span>
+                      <span className={isActive ? "text-[#2F6E4F]" : "text-[#5B655D]"}>{labels[rRole] || rRole}</span>
                       <span className="text-[#2F6E4F]">{count} ({pct}%)</span>
                     </div>
                     <div className="w-full bg-[#E4F0E8] h-1.5 rounded-full mt-2 overflow-hidden">
@@ -306,15 +344,58 @@ export function MonitoringClient({ role }: { role: string }) {
 
           {/* Recent Activity Log Feed */}
           <div className="bg-white rounded-[20px] p-5 border border-[#E4F0E8] shadow-sm space-y-4">
-            <h3 className="text-xs font-bold text-[#1B1F1C] uppercase tracking-wide flex items-center justify-between">
-              <span>Aktivitas Terbaru Platform (Real-Time Feed)</span>
-              <span className="text-[10px] text-[#9AA39C] font-normal lowercase">Menampilkan {activityLogs.length} aktivitas terakhir</span>
-            </h3>
-            <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1">
-              {activityLogs.length === 0 ? (
-                <p className="text-xs text-[#9AA39C] text-center py-8">Belum ada catatan aktivitas.</p>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E4F0E8] pb-4">
+              <div>
+                <h3 className="text-xs font-bold text-[#1B1F1C] uppercase tracking-wide">
+                  Aktivitas Terbaru Platform (Real-Time Feed)
+                </h3>
+                <p className="text-[10px] text-[#9AA39C] mt-0.5">
+                  Menampilkan {filteredLogs.length} aktivitas {selectedRole ? `peran "${selectedRole}"` : ""} dari total {activityLogs.length} log
+                </p>
+              </div>
+              
+              {/* Date Filters & Clear Filters */}
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-1.5 text-xs text-[#5B655D]">
+                  <span className="font-semibold text-[10px] uppercase text-[#9AA39C]">Dari:</span>
+                  <input
+                    type="date"
+                    value={filterStartDate}
+                    onChange={(e) => setFilterStartDate(e.target.value)}
+                    className="h-8 px-2 rounded-[8px] border border-[#9AA39C]/40 text-xs text-[#1B1F1C] bg-white focus:outline-none focus:ring-1 focus:ring-[#2F6E4F]"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-[#5B655D]">
+                  <span className="font-semibold text-[10px] uppercase text-[#9AA39C]">Sampai:</span>
+                  <input
+                    type="date"
+                    value={filterEndDate}
+                    onChange={(e) => setFilterEndDate(e.target.value)}
+                    className="h-8 px-2 rounded-[8px] border border-[#9AA39C]/40 text-xs text-[#1B1F1C] bg-white focus:outline-none focus:ring-1 focus:ring-[#2F6E4F]"
+                  />
+                </div>
+                {(selectedRole || filterStartDate || filterEndDate) && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedRole(null);
+                      setFilterStartDate("");
+                      setFilterEndDate("");
+                    }}
+                    className="h-8 px-2.5 text-[10px] font-bold text-[#D14343] border border-[#D14343]/20 hover:bg-[#FAEAEA] cursor-pointer"
+                  >
+                    Reset Filter
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2.5 max-h-[500px] overflow-y-auto pr-1 pt-2">
+              {filteredLogs.length === 0 ? (
+                <p className="text-xs text-[#9AA39C] text-center py-8">Belum ada catatan aktivitas yang sesuai filter.</p>
               ) : (
-                activityLogs.map((log) => {
+                filteredLogs.map((log) => {
                   const formattedTime = new Date(log.created_at).toLocaleString("id-ID", {
                     day: "numeric",
                     month: "short",
