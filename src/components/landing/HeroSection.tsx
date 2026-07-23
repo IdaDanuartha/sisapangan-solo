@@ -1,19 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/Button";
+import Link from "next/link";
+import { ArrowRight, CheckCircle, LeafyGreen, HandHeart, BarChart3 } from "lucide-react";
 
 export function HeroSection() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLDivElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Respect prefers-reduced-motion
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) return;
 
@@ -22,33 +19,21 @@ export function HeroSection() {
       const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
 
       tl.fromTo(
-        badgeRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.5 }
+        headlineRef.current,
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.7 }
       )
         .fromTo(
-          headlineRef.current,
-          { opacity: 0, y: 24 },
-          { opacity: 1, y: 0, duration: 0.65 },
-          "-=0.2"
-        )
-        .fromTo(
           subRef.current,
-          { opacity: 0, y: 18 },
-          { opacity: 1, y: 0, duration: 0.5 },
-          "-=0.3"
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.55 },
+          "-=0.35"
         )
         .fromTo(
-          ctaRef.current,
-          { opacity: 0, y: 14 },
-          { opacity: 1, y: 0, duration: 0.5 },
-          "-=0.2"
-        )
-        .fromTo(
-          imgRef.current,
-          { opacity: 0, scale: 0.96, y: 20 },
-          { opacity: 1, scale: 1, y: 0, duration: 0.8 },
-          "-=0.6"
+          gridRef.current,
+          { opacity: 0, y: 32 },
+          { opacity: 1, y: 0, duration: 0.75 },
+          "-=0.25"
         );
     };
 
@@ -56,110 +41,153 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-[#E4F0E8] via-[#F4F6F3] to-[#FBEBD8] pt-16 overflow-hidden">
-      {/* Decorative background circles */}
+    <section
+      id="beranda"
+      className="relative bg-[#F4F6F3] pt-24 pb-0 overflow-hidden"
+    >
+      {/* Subtle bg accent */}
       <div
-        className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-[#2F6E4F]/8 blur-3xl pointer-events-none"
+        className="absolute -top-40 -right-40 w-[520px] h-[520px] rounded-full bg-[#2F6E4F]/5 blur-3xl pointer-events-none"
         aria-hidden="true"
       />
       <div
-        className="absolute bottom-0 -left-24 w-72 h-72 rounded-full bg-[#E88C2D]/10 blur-3xl pointer-events-none"
+        className="absolute top-1/2 -left-32 w-80 h-80 rounded-full bg-[#E88C2D]/6 blur-3xl pointer-events-none"
         aria-hidden="true"
       />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {/* Text Column */}
-        <div className="flex flex-col gap-6">
-          {/* Badge */}
-          <div ref={badgeRef} className="opacity-0">
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#E4F0E8] border border-[#2F6E4F]/20 text-xs font-medium text-[#2F6E4F]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#3AA65A] animate-pulse" />
-              Platform aktif di Solo Raya
-            </span>
-          </div>
-
-          {/* Headline */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Headline block — center aligned, large */}
+        <div className="text-center mb-4">
           <h1
             ref={headlineRef}
-            className="opacity-0 text-4xl sm:text-5xl lg:text-6xl leading-[1.1] font-[var(--font-display)] text-[#1E4A35]"
+            className="opacity-0 text-4xl sm:text-5xl lg:text-[3.4rem] font-bold text-[#1B1F1C] leading-[1.12] tracking-tight"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Pangan Sisa,{" "}
-            <span className="text-[#2F6E4F]">Bukan Sampah.</span>
+            Selamatkan{" "}
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#E4F0E8] border-2 border-[#2F6E4F]/20 align-middle -translate-y-1">
+                <LeafyGreen size={24} className="text-[#2F6E4F]" aria-label="pangan" />
+              </span>
+            </span>{" "}
+            <span className="text-[#2F6E4F]">Pangan,</span>
+            <br />
+            Bantu{" "}
+            <span className="inline-flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FBEBD8] border-2 border-[#E88C2D]/20 align-middle -translate-y-1">
+                <HandHeart size={24} className="text-[#E88C2D]" aria-label="komunitas" />
+              </span>
+            </span>{" "}
+            Sesama di Solo Raya
           </h1>
-
-          {/* Sub-headline */}
-          <p
-            ref={subRef}
-            className="opacity-0 text-lg text-[#5B655D] leading-relaxed max-w-lg"
-          >
-            SisaPangan Solo menghubungkan UMKM kuliner, relawan, dan penerima
-            manfaat dalam satu alur digital, mulai dari surplus ditemukan hingga
-            sampai ke tangan yang membutuhkan.
-          </p>
-
-          {/* CTA */}
-          <div
-            ref={ctaRef}
-            className="opacity-0 flex flex-wrap gap-3"
-          >
-            <Link href="/register?role=donor">
-              <Button variant="primary" size="lg" id="cta-donor">
-                Daftar sebagai Donor
-              </Button>
-            </Link>
-            <Link href="/register?role=volunteer">
-              <Button variant="secondary" size="lg" id="cta-volunteer">
-                Daftar sebagai Relawan
-              </Button>
-            </Link>
-          </div>
-
-          {/* Trust row */}
-          <div className="flex items-center gap-6 pt-2">
-            {[
-              { value: "23–48 jt ton", label: "pangan terbuang/tahun" },
-              { value: "Rp 213 T", label: "kerugian ekonomi" },
-            ].map((stat) => (
-              <div key={stat.value} className="border-l-2 border-[#2F6E4F]/30 pl-3">
-                <p className="text-sm font-bold text-[#2F6E4F]">{stat.value}</p>
-                <p className="text-xs text-[#9AA39C]">{stat.label}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* Image Column */}
-        <div ref={imgRef} className="opacity-0 relative">
-          <div className="relative w-full aspect-[4/3] rounded-[24px] overflow-hidden shadow-[0_24px_64px_rgba(47,110,79,0.15)]">
+        <p
+          ref={subRef}
+          className="opacity-0 text-center text-lg text-[#5B655D] leading-relaxed max-w-2xl mx-auto mb-12"
+        >
+          Platform koordinasi food rescue yang menghubungkan donor pangan,
+          relawan, dan penerima manfaat secara real-time dan terverifikasi.
+        </p>
+
+        {/* 3-Column Asymmetric Image Grid */}
+        <div
+          ref={gridRef}
+          className="opacity-0 grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch min-h-[420px]"
+        >
+          {/* Card Kiri — tall image with overlay */}
+          <div className="relative rounded-2xl overflow-hidden min-h-[320px] md:min-h-[420px] group cursor-pointer">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1E4A35]/30 to-[#1E4A35]/90 z-10" />
             <Image
               src="/images/hero-illustration.png"
-              alt="Ilustrasi alur penyelamatan pangan: donor menyerahkan ke relawan, relawan mendistribusikan ke penerima manfaat"
+              alt="Donor menyerahkan pangan surplus"
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
               priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              sizes="(max-width: 768px) 100vw, 33vw"
             />
-          </div>
-          {/* Floating stat card */}
-          <div className="absolute -bottom-4 -left-4 bg-white rounded-[14px] shadow-lg px-4 py-3 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[10px] bg-[#E4F0E8] flex items-center justify-center text-[#2F6E4F] text-xl font-bold">
-              ♻
-            </div>
-            <div>
-              <p className="text-xs text-[#9AA39C]">Terselamatkan hari ini</p>
-              <p className="text-base font-bold text-[#1B1F1C] tabular-nums">
-                124 kg
+            {/* Overlay content */}
+            <div className="absolute bottom-0 left-0 right-0 z-20 p-5">
+              <p className="text-xs font-semibold text-[#A8D5BA] uppercase tracking-wider mb-2">
+                Food Rescue
               </p>
+              <h3 className="text-white font-bold text-lg leading-tight mb-3">
+                Ubah Sisa Pangan Jadi Nilai Nyata
+              </h3>
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-white/80 hover:text-white transition-colors group/link"
+              >
+                Selengkapnya
+                <ArrowRight size={14} className="transition-transform group-hover/link:translate-x-0.5" />
+              </Link>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-50">
-        <div className="w-5 h-8 rounded-full border-2 border-[#2F6E4F] flex items-start justify-center pt-1.5">
-          <div className="w-1 h-2 rounded-full bg-[#2F6E4F] animate-bounce" />
+          {/* Card Tengah — 2 image stack + info box */}
+          <div className="flex flex-col gap-4">
+            <div className="relative rounded-2xl overflow-hidden flex-1 min-h-[180px] group cursor-pointer">
+              <Image
+                src="/images/hero-illustration.png"
+                alt="Relawan mengambil surplus pangan"
+                fill
+                className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+            </div>
+            <div className="rounded-2xl bg-[#2F6E4F] p-5 text-white">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <CheckCircle size={16} className="text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm leading-snug mb-1">
+                    Koordinasi Real-time & Terverifikasi
+                  </p>
+                  <p className="text-xs text-white/70 leading-relaxed">
+                    Setiap pickup terlacak dari posting hingga distribusi akhir.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card Kanan — image + info box below */}
+          <div className="flex flex-col gap-4">
+            <div className="rounded-2xl bg-[#FBEBD8] p-5">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[#E88C2D]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <BarChart3 size={16} className="text-[#E88C2D]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-[#1B1F1C] leading-snug mb-1">
+                    Dampak Terukur & Transparan
+                  </p>
+                  <p className="text-xs text-[#5B655D] leading-relaxed">
+                    Dashboard real-time dengan data kg, porsi, dan jejak karbon yang bisa diaudit.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="relative rounded-2xl overflow-hidden flex-1 min-h-[220px] group cursor-pointer">
+              <Image
+                src="/images/hero-illustration.png"
+                alt="Penerima manfaat mendapatkan pangan"
+                fill
+                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1E4A35]/50 to-transparent z-10" />
+              <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-white/90 hover:text-white transition-colors group/link"
+                >
+                  Bergabung
+                  <ArrowRight size={14} className="transition-transform group-hover/link:translate-x-0.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

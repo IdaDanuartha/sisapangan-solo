@@ -1,41 +1,35 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ClipboardList, Gauge, MapPin, QrCode } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const steps = [
   {
-    icon: ClipboardList,
-    title: "Donor Posting Surplus",
+    number: "01",
+    title: "Donor Melaporkan Surplus",
     description:
       "UMKM atau restoran mengisi form singkat berisi foto, jenis makanan, lokasi, dan estimasi waktu layak konsumsi dalam 90 detik.",
-    color: "#2F6E4F",
-    bg: "#E4F0E8",
   },
   {
-    icon: Gauge,
-    title: "Sistem Memberi Skor Kesegaran",
+    number: "02",
+    title: "Volunteer Menjemput & Mendistribusikan",
     description:
-      "Sistem otomatis menghitung Freshness & Risk Score (hijau/kuning/merah) berdasarkan kategori makanan, kondisi simpan, dan sisa waktu.",
-    color: "#E88C2D",
-    bg: "#FBEBD8",
+      "Volunteer terdekat mendapat notifikasi, mengambil surplus dengan rute teroptimasi, dan mengantar ke Non-Consumption Partner.",
   },
   {
-    icon: MapPin,
-    title: "Matching ke Penerima Terdekat",
+    number: "03",
+    title: "Dipantau Monitor & Admin",
     description:
-      "Relawan atau penerima manfaat terdekat mendapat notifikasi dan bisa klaim surplus langsung dari peta interaktif.",
-    color: "#2F6E4F",
-    bg: "#E4F0E8",
+      "Setiap alur tercatat via QR code. Monitor memverifikasi distribusi, admin mengelola laporan dan sistem gamifikasi badge.",
   },
-  {
-    icon: QrCode,
-    title: "Distribusi Tercatat via QR",
-    description:
-      "Setiap batch punya QR code. Setelah pickup selesai, riwayat distribusi tersimpan dan bisa dipindai siapa saja untuk transparansi.",
-    color: "#C1502E",
-    bg: "#FBEBD8",
-  },
+];
+
+const floatingBadges = [
+  { value: "5", label: "Peran Aktif", top: "12%", left: "50%", transform: "-translate-x-1/2" },
+  { value: "24/7", label: "Koordinasi Real-time", bottom: "12%", left: "50%", transform: "-translate-x-1/2" },
 ];
 
 export function HowItWorksSection() {
@@ -53,137 +47,151 @@ export function HowItWorksSection() {
       const section = sectionRef.current;
       if (!section) return;
 
-      const stepEls = section.querySelectorAll(".step-item");
-      const connectors = section.querySelectorAll(".step-connector");
-
       gsap.fromTo(
-        stepEls,
-        { opacity: 0, y: 30 },
+        section.querySelectorAll(".step-item"),
+        { opacity: 0, x: 24 },
         {
           opacity: 1,
-          y: 0,
-          duration: 0.6,
-          stagger: 0.2,
+          x: 0,
+          duration: 0.55,
+          stagger: 0.15,
           ease: "power2.out",
           scrollTrigger: {
             trigger: section,
-            start: "top 70%",
+            start: "top 72%",
             once: true,
           },
         }
       );
 
-      connectors.forEach((connector) => {
-        gsap.fromTo(
-          connector,
-          { scaleX: 0, transformOrigin: "left center" },
-          {
-            scaleX: 1,
-            duration: 0.5,
-            ease: "power1.inOut",
-            scrollTrigger: {
-              trigger: section,
-              start: "top 65%",
-              once: true,
-            },
-          }
-        );
-      });
+      gsap.fromTo(
+        section.querySelectorAll(".image-col"),
+        { opacity: 0, scale: 0.96 },
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.7,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 72%",
+            once: true,
+          },
+        }
+      );
     };
 
     loadAnimations();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="cara-kerja"
-      className="py-20 bg-[#F4F6F3]"
-    >
+    <section ref={sectionRef} id="cara-kerja" className="py-20 bg-[#F4F6F3]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-14">
+        {/* Section header */}
+        <div className="mb-14">
+          <p className="text-xs font-semibold text-[#E88C2D] uppercase tracking-widest mb-3 flex items-center gap-2">
+            <span className="w-5 h-px bg-[#E88C2D] inline-block" />
+            Cara Kerja
+          </p>
           <h2
-            className="text-3xl sm:text-4xl font-bold text-[#1E4A35] mb-4"
+            className="text-3xl sm:text-4xl font-bold text-[#1B1F1C] leading-[1.15]"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Bagaimana SisaPangan Bekerja?
+            Bagaimana SisaPangan Solo Bekerja?
           </h2>
-          <p className="text-[#5B655D] max-w-lg mx-auto">
-            Empat langkah yang mengubah sisa makanan menjadi berkah bagi
-            komunitas Solo Raya.
-          </p>
         </div>
 
-        {/* Desktop: horizontal timeline */}
-        <div className="hidden md:flex items-start gap-0">
-          {steps.map((step, idx) => (
-            <div key={idx} className="flex items-start flex-1">
-              <div className="step-item opacity-0 flex flex-col items-center text-center px-4 flex-1">
-                {/* Step number + icon */}
-                <div className="relative mb-4">
-                  <div
-                    className="w-16 h-16 rounded-[16px] flex items-center justify-center shadow-sm"
-                    style={{ background: step.bg }}
-                  >
-                    <step.icon size={28} style={{ color: step.color }} />
-                  </div>
-                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#2F6E4F] text-white text-xs font-bold flex items-center justify-center">
-                    {idx + 1}
-                  </span>
-                </div>
-                <h3 className="text-sm font-semibold text-[#1B1F1C] mb-2">
-                  {step.title}
-                </h3>
-                <p className="text-xs text-[#5B655D] leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-
-              {/* Connector line (not after last step) */}
-              {idx < steps.length - 1 && (
-                <div className="flex items-center mt-8 flex-shrink-0">
-                  <div
-                    className="step-connector h-0.5 w-8 bg-[#2F6E4F]/30"
-                    style={{ transformOrigin: "left" }}
-                  />
-                </div>
-              )}
+        {/* 2 images with floating badges */}
+        <div className="image-col opacity-0 relative mb-10 hidden md:block">
+          <div className="grid grid-cols-2 gap-4 h-64">
+            <div className="relative rounded-2xl overflow-hidden">
+              <Image
+                src="/images/hero-illustration.png"
+                alt="Donor melaporkan surplus pangan"
+                fill
+                className="object-cover object-top"
+                sizes="50vw"
+              />
+              <div className="absolute inset-0 bg-[#1E4A35]/30" />
             </div>
-          ))}
+            <div className="relative rounded-2xl overflow-hidden">
+              <Image
+                src="/images/hero-illustration.png"
+                alt="Volunteer mengantarkan ke penerima"
+                fill
+                className="object-cover object-center"
+                sizes="50vw"
+              />
+              <div className="absolute inset-0 bg-[#2F6E4F]/20" />
+            </div>
+          </div>
+
+          {/* Floating badges */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-xl px-5 py-3 text-center z-10 border border-[#E4F0E8]">
+            <p className="text-2xl font-bold text-[#2F6E4F]">5</p>
+            <p className="text-xs text-[#5B655D]">Peran Aktif</p>
+          </div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-xl px-5 py-3 text-center z-10 border border-[#E4F0E8]">
+            <p className="text-2xl font-bold text-[#E88C2D]">24/7</p>
+            <p className="text-xs text-[#5B655D]">Koordinasi Real-time</p>
+          </div>
         </div>
 
-        {/* Mobile: vertical timeline */}
-        <div className="flex md:hidden flex-col gap-0">
-          {steps.map((step, idx) => (
-            <div key={idx} className="flex gap-4">
-              {/* Left: icon + connector */}
-              <div className="flex flex-col items-center">
-                <div
-                  className="w-12 h-12 rounded-[12px] flex items-center justify-center flex-shrink-0"
-                  style={{ background: step.bg }}
-                >
-                  <step.icon size={22} style={{ color: step.color }} />
-                </div>
-                {idx < steps.length - 1 && (
-                  <div className="w-0.5 flex-1 bg-[#2F6E4F]/20 my-2" />
-                )}
-              </div>
-              {/* Right: text */}
-              <div className="pb-8">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-xs font-bold text-[#2F6E4F]">
-                    Langkah {idx + 1}
-                  </span>
-                </div>
-                <h3 className="text-sm font-semibold text-[#1B1F1C] mb-1">
-                  {step.title}
-                </h3>
-                <p className="text-xs text-[#5B655D] leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
+        {/* Split bottom: CTA card (left) + numbered list (right) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* CTA card */}
+          <div className="rounded-2xl bg-[#2F6E4F] p-8 flex flex-col justify-between min-h-[280px] relative overflow-hidden">
+            {/* Decorative circles */}
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-white/5 pointer-events-none" aria-hidden="true" />
+            <div className="absolute -top-6 -left-6 w-24 h-24 rounded-full bg-white/5 pointer-events-none" aria-hidden="true" />
+
+            <div>
+              <p className="text-xs font-semibold text-[#A8D5BA] uppercase tracking-widest mb-4">
+                Bergabung Sekarang
+              </p>
+              <h3
+                className="text-2xl font-bold text-white leading-snug mb-3"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                Jadi Bagian dari<br />Gerakan Food Rescue
+              </h3>
+              <p className="text-sm text-white/70 leading-relaxed">
+                Daftarkan diri sebagai Donor, Volunteer, atau Non-Consumption Partner
+                dan mulai berkontribusi hari ini.
+              </p>
             </div>
-          ))}
+
+            <Link href="/register" className="mt-6 inline-flex">
+              <Button
+                variant="primary"
+                size="lg"
+                className="bg-white text-[#2F6E4F] hover:bg-[#E4F0E8] border-0 gap-2"
+                id="cta-how-it-works"
+              >
+                Gabung Jadi Volunteer
+                <ArrowRight size={16} />
+              </Button>
+            </Link>
+          </div>
+
+          {/* Numbered list */}
+          <div className="flex flex-col gap-5 justify-center">
+            {steps.map((step, idx) => (
+              <div key={idx} className="step-item opacity-0 flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#E4F0E8] border-2 border-[#2F6E4F]/20 flex items-center justify-center">
+                  <span className="text-sm font-bold text-[#2F6E4F]">{step.number}</span>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[#1B1F1C] text-sm mb-1">
+                    {step.title}
+                  </h3>
+                  <p className="text-xs text-[#5B655D] leading-relaxed">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

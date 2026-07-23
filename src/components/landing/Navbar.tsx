@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 
 const navLinks = [
+  { href: "#beranda", label: "Beranda" },
+  { href: "#tentang", label: "Tentang" },
   { href: "#cara-kerja", label: "Cara Kerja" },
-  { href: "#fitur", label: "Fitur" },
-  { href: "#dampak", label: "Dampak" },
+  { href: "#peran", label: "Peran" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 export function Navbar() {

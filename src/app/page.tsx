@@ -1,14 +1,11 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { ProblemSection } from "@/components/landing/ProblemSection";
+import { AboutSection } from "@/components/landing/AboutSection";
 import { HowItWorksSection } from "@/components/landing/HowItWorksSection";
-import { FeaturesSection } from "@/components/landing/FeaturesSection";
-import {
-  ImpactSection,
-  CtaSection,
-  Footer,
-} from "@/components/landing/ImpactCtaFooter";
+import { RolesSection } from "@/components/landing/RolesSection";
+import { FAQSection } from "@/components/landing/FAQSection";
+import { CtaBannerSection, Footer } from "@/components/landing/CtaFooter";
 
 export const metadata: Metadata = {
   title:
@@ -38,11 +35,11 @@ export default function LandingPage() {
       <Navbar />
       <main>
         <HeroSection />
-        <ProblemSection />
+        <AboutSection />
         <HowItWorksSection />
-        <FeaturesSection />
-        <ImpactSection />
-        <CtaSection />
+        <RolesSection />
+        <FAQSection />
+        <CtaBannerSection />
       </main>
       <Footer />
     </>
