@@ -53,7 +53,7 @@ export function HeroSection() {
   return (
     <section
       id="beranda"
-      className="relative bg-[#F4F6F3] pt-24 pb-0 overflow-hidden"
+      className="relative bg-[#F4F6F3] pt-24 pb-10 overflow-hidden h-screen"
     >
       {/* Subtle bg accent */}
       <div
