@@ -119,8 +119,8 @@ export async function DELETE(request: NextRequest) {
       .single();
 
     const role = profile?.role || user.user_metadata?.role || "donor";
-    if (role !== "admin" && role !== "monitor") {
-      return NextResponse.json({ error: "Hanya Administrator atau Monitor yang dapat membersihkan log aktivitas" }, { status: 403 });
+    if (role !== "admin") {
+      return NextResponse.json({ error: "Hanya Administrator yang dapat membersihkan log aktivitas" }, { status: 403 });
     }
 
     const { searchParams } = new URL(request.url);

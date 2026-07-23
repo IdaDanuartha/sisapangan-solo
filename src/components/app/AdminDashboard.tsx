@@ -887,15 +887,17 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
               <p className="text-xs text-[#9AA39C]">Pencatatan real-time aksi pengguna, peran, dan aktivitas harian platform.</p>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowClearLogModal(true)}
-                className="h-8 px-2.5 text-xs text-[#D14343] border border-[#D14343]/20 hover:bg-[#FAEAEA] flex items-center gap-1.5 cursor-pointer"
-              >
-                <Trash2 size={14} />
-                Bersihkan Log
-              </Button>
+              {role === "admin" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowClearLogModal(true)}
+                  className="h-8 px-2.5 text-xs text-[#D14343] border border-[#D14343]/20 hover:bg-[#FAEAEA] flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 size={14} />
+                  Bersihkan Log
+                </Button>
+              )}
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#EBF5EE] text-[#2F6E4F] border border-[#2F6E4F]/20">
                 <span className="w-2 h-2 rounded-full bg-[#2F6E4F] animate-ping" />
                 Sistem Berjalan Aktif
