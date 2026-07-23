@@ -42,6 +42,16 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Redirect authenticated user away from auth pages (/login, /register) to /app/dashboard
+  if (
+    user &&
+    (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/register")
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/app/dashboard";
+    return NextResponse.redirect(url);
+  }
+
   // Protect /app/* routes — redirect to /login if not authenticated
   if (
     !user &&
