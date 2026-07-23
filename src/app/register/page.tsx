@@ -145,11 +145,10 @@ function RegisterPageInner() {
         return;
       }
 
-      router.push("/app/dashboard");
-      router.refresh();
+      // Force full window navigation to guarantee fresh cookies are sent to server middleware on first click
+      window.location.href = "/app/dashboard";
     } catch {
       setServerError("Terjadi kesalahan. Silakan coba lagi.");
-    } finally {
       setIsLoading(false);
     }
   }

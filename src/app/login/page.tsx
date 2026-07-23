@@ -71,13 +71,24 @@ function LoginPageInner() {
           setError("Akun Anda telah ditangguhkan/dinonaktifkan oleh administrator. Silakan hubungi dukungan.");
           return;
         }
+
+        // Log login activity
+        try {
+          await supabase.from("user_activity_log").insert({
+            user_id: authData.user.id,
+            user_name: authData.user.user_metadata?.name || authData.user.email || "Pengguna SisaPangan",
+            role: authData.user.user_metadata?.role || "donor",
+            action: "Masuk ke Platform (Login)",
+          });
+        } catch (e) {
+          // ignore non-critical log error
+        }
       }
 
-      router.push("/app/dashboard");
-      router.refresh();
+      // Force full window navigation to guarantee fresh cookies are sent to server middleware on first click
+      window.location.href = "/app/dashboard";
     } catch (err: any) {
       setError(`Terjadi kesalahan: ${err?.message || err}`);
-    } finally {
       setIsLoading(false);
     }
   }
