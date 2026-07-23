@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/Button";
 import { Input, Select } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
+import { logUserActivity } from "@/lib/activity";
+
 
 import type L from "leaflet";
 
@@ -323,6 +325,18 @@ export default function ProfilePage() {
         },
       });
       showToast("Profil berhasil diperbarui!", "success");
+      // Log activity
+      try {
+        await logUserActivity({
+          userId: user.id,
+          action: "Memperbarui Profil Pengguna",
+          resourceType: "profile",
+          resourceId: user.id,
+          metadata: { name: profile.name },
+        });
+      } catch (logErr) {
+        console.error("Gagal mencatat log aktivitas:", logErr);
+      }
     }
     setSaving(false);
   }

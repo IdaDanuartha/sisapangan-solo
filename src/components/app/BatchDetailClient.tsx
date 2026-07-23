@@ -29,7 +29,9 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge, DistributionBadge, CategoryBadge } from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
+import { logUserActivity } from "@/lib/activity";
 import { Modal } from "@/components/ui/Modal";
+
 
 function formatRecipeSuggestions(text: string | null) {
   if (!text) return null;
@@ -299,6 +301,22 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
         status: "Diklaim",
         timestamp: new Date().toISOString(),
       });
+
+      // Log activity
+      try {
+        await logUserActivity({
+          userId: currentUserId || undefined,
+          action: currentBatch.freshness_status === "non-consumption" 
+            ? "Mengklaim Surplus Non-Konsumsi" 
+            : "Mengklaim Penjemputan Batch",
+          resourceType: "surplus_batch",
+          resourceId: currentBatch.id,
+          metadata: { name: currentBatch.name, status: "Diklaim" },
+        });
+      } catch (logErr) {
+        console.error("Gagal mencatat log aktivitas:", logErr);
+      }
+
       setCurrentBatch((prev) => ({ ...prev, status: "Diklaim" }));
       showToast("Surplus berhasil diklaim!", "success");
     }
@@ -321,6 +339,20 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
       status: nextStatus,
       timestamp: new Date().toISOString(),
     });
+
+    // Log activity
+    try {
+      await logUserActivity({
+        userId: currentUserId || undefined,
+        action: nextStatus === "Diambil" ? "Mengambil Makanan (Pickup)" : "Menyelesaikan Distribusi Pangan",
+        resourceType: "surplus_batch",
+        resourceId: currentBatch.id,
+        metadata: { name: currentBatch.name, status: nextStatus },
+      });
+    } catch (logErr) {
+      console.error("Gagal mencatat log aktivitas:", logErr);
+    }
+
     setCurrentBatch((prev) => ({ ...prev, status: nextStatus as any }));
     showToast(`Status diperbarui: ${nextStatus}`, "success");
     setIsUpdating(false);

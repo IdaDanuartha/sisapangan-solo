@@ -564,8 +564,8 @@ export function ImpactDashboardClient({
                 <th className="py-2.5 px-3 font-bold">Wilayah</th>
                 <th className="py-2.5 px-3 font-bold">Status</th>
                 <th className="py-2.5 px-3 font-bold">Prioritas</th>
-                <th className="py-2.5 px-3 font-bold">Waktu Expiry</th>
-                <th className="py-2.5 px-3 font-bold text-right rounded-r-[8px]">Aksi</th>
+                <th className="py-2.5 px-3 font-bold">Waktu Kadaluarsa</th>
+                <th className="py-2.5 px-3 font-bold text-center rounded-r-[8px]">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F4F6F3]">

@@ -22,6 +22,8 @@ import {
   type StorageCondition,
   type FreshnessStatus,
 } from "@/lib/freshness-score";
+import { logUserActivity } from "@/lib/activity";
+
 
 const DRAFT_KEY = "sisapangan_surplus_draft";
 
@@ -615,6 +617,19 @@ function AddSurplusForm() {
         .single();
 
       if (insertErr) throw insertErr;
+
+      // Log activity
+      try {
+        await logUserActivity({
+          userId: user.id,
+          action: "Menambahkan Surplus Pangan Baru",
+          resourceType: "surplus_batch",
+          resourceId: batch.id,
+          metadata: { name: form.name, qty: `${qtyVal} ${unitVal}`, category: form.category },
+        });
+      } catch (logErr) {
+        console.error("Gagal mencatat log aktivitas:", logErr);
+      }
 
       // Trigger QR code generation and WhatsApp notifications
       try {

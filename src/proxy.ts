@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const SEVEN_DAYS = 7 * 24 * 60 * 60; // 7 hari dalam detik (604,800s)
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(

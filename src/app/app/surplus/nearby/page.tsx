@@ -7,6 +7,8 @@ import { StatusBadge, CategoryBadge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
+import { logUserActivity } from "@/lib/activity";
+
 import Link from "next/link";
 import { SearchAutocomplete, type SearchSuggestion } from "@/components/ui/SearchAutocomplete";
 import { Modal } from "@/components/ui/Modal";
@@ -832,6 +834,21 @@ export default function NearbySurplusPage() {
         status: "Diklaim",
         timestamp: new Date().toISOString(),
       });
+      
+      // Log activity
+      try {
+        await logUserActivity({
+          userId: user.id,
+          action: batchToClaim.freshness_status === "non-consumption" 
+            ? "Mengklaim Surplus Non-Konsumsi" 
+            : "Mengklaim Penjemputan Batch",
+          resourceType: "surplus_batch",
+          resourceId: batchToClaim.id,
+          metadata: { name: batchToClaim.name, status: "Diklaim" },
+        });
+      } catch (logErr) {
+        console.error("Gagal mencatat log aktivitas:", logErr);
+      }
       
       showToast("Surplus pangan berhasil diklaim!", "success");
       // Remove from active list

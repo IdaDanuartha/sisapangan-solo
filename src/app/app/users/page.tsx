@@ -21,7 +21,9 @@ import {
 import { Button } from "@/components/ui/Button";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
+import { logUserActivity } from "@/lib/activity";
 import { Modal } from "@/components/ui/Modal";
+
 import { Input, Select } from "@/components/ui/Input";
 
 interface UserProfile {
@@ -112,6 +114,18 @@ export default function UserManagementPage() {
         `User ${user.name} berhasil ${nextVerifyState ? "diverifikasi" : "dibatalkan verifikasinya"}.`,
         "success"
       );
+
+      // Log activity
+      try {
+        await logUserActivity({
+          action: nextVerifyState ? "Memverifikasi Akun Pengguna" : "Membatalkan Verifikasi Akun Pengguna",
+          resourceType: "profile",
+          resourceId: user.id,
+          metadata: { name: user.name, role: user.role },
+        });
+      } catch (logErr) {
+        console.error("Gagal mencatat log aktivitas:", logErr);
+      }
 
       // Send WhatsApp notification if verified and opted in
       if (nextVerifyState && user.contact_number && user.whatsapp_opt_in) {
@@ -283,6 +297,27 @@ export default function UserManagementPage() {
         } catch (notifErr) {
           console.error("Gagal mengirim notifikasi WA verifikasi:", notifErr);
         }
+      }
+
+      // Log activity
+      try {
+        await logUserActivity({
+          action: "Memperbarui Profil Pengguna",
+          resourceType: "profile",
+          resourceId: selectedUser.id,
+          metadata: { name: editName, updated_by: "admin" },
+        });
+
+        if (newlyVerified) {
+          await logUserActivity({
+            action: "Memverifikasi Akun Pengguna",
+            resourceType: "profile",
+            resourceId: selectedUser.id,
+            metadata: { name: editName, role: editRole },
+          });
+        }
+      } catch (logErr) {
+        console.error("Gagal mencatat log aktivitas:", logErr);
       }
 
       setSelectedUser(null);

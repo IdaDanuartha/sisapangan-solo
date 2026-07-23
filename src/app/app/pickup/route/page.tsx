@@ -8,7 +8,9 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
+import { logUserActivity } from "@/lib/activity";
 import { useRouter } from "next/navigation";
+
 
 interface ClaimedBatch {
   id: string;
@@ -481,6 +483,8 @@ export default function PickupRoutePage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setCompleting(null); return; }
 
+    const activeBatchName = batches.find((b) => b.id === batchId)?.name || "Surplus Pangan";
+
     // Update surplus_batch status
     const { error: batchErr } = await supabase
       .from("surplus_batch")
@@ -505,6 +509,19 @@ export default function PickupRoutePage() {
       return;
     }
 
+    // Log activity
+    try {
+      await logUserActivity({
+        userId: user.id,
+        action: "Mengambil Makanan (Pickup)",
+        resourceType: "surplus_batch",
+        resourceId: batchId,
+        metadata: { name: activeBatchName, status: "Diambil" },
+      });
+    } catch (logErr) {
+      console.error("Gagal mencatat log aktivitas:", logErr);
+    }
+
     await load();
     setCompleting(null);
     showToast("Makanan berhasil diambil dari donor!", "success");
@@ -515,6 +532,8 @@ export default function PickupRoutePage() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setCompleting(null); return; }
+
+    const activeBatchName = batches.find((b) => b.id === batchId)?.name || "Surplus Pangan";
 
     // Update surplus_batch status
     const { error: batchErr } = await supabase
@@ -540,6 +559,19 @@ export default function PickupRoutePage() {
       return;
     }
 
+    // Log activity
+    try {
+      await logUserActivity({
+        userId: user.id,
+        action: "Menyelesaikan Distribusi Pangan",
+        resourceType: "surplus_batch",
+        resourceId: batchId,
+        metadata: { name: activeBatchName, status: "Selesai" },
+      });
+    } catch (logErr) {
+      console.error("Gagal mencatat log aktivitas:", logErr);
+    }
+
     await load();
     setCompleting(null);
     showToast("Pengantaran berhasil diselesaikan!", "success");
@@ -550,6 +582,8 @@ export default function PickupRoutePage() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setCompleting(null); return; }
+
+    const activeBatchName = batches.find((b) => b.id === batchId)?.name || "Surplus Pangan";
 
     // Revert surplus_batch back to Tersedia
     const { error: batchErr } = await supabase
@@ -573,6 +607,19 @@ export default function PickupRoutePage() {
       showToast("Gagal menghapus log klaim: " + logErr.message, "error");
       setCompleting(null);
       return;
+    }
+
+    // Log activity
+    try {
+      await logUserActivity({
+        userId: user.id,
+        action: "Membatalkan Penjemputan Batch",
+        resourceType: "surplus_batch",
+        resourceId: batchId,
+        metadata: { name: activeBatchName, status: "Tersedia" },
+      });
+    } catch (logErr) {
+      console.error("Gagal mencatat log aktivitas:", logErr);
     }
 
     setBatches((prev) => prev.filter((b) => b.id !== batchId));
