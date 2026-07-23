@@ -18,7 +18,15 @@ export default async function HistoryPage() {
 
   let batches: any[] = [];
 
-  if (role === "donor") {
+  if (role === "admin" || role === "monitor") {
+    // Admin / Monitor — fetch all history
+    const { data } = await supabase
+      .from("surplus_batch")
+      .select("*, profiles:donor_id(name)")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    batches = data ?? [];
+  } else if (role === "donor") {
     const { data } = await supabase
       .from("surplus_batch")
       .select("*, profiles:donor_id(name)")
@@ -43,6 +51,7 @@ export default async function HistoryPage() {
       batches = data ?? [];
     }
   }
+
 
   return <HistoryClient batches={batches} role={role} />;
 }
