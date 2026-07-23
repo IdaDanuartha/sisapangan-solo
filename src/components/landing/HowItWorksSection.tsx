@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 
 const steps = [
   {
@@ -106,8 +105,8 @@ export function HowItWorksSection() {
           <div className="grid grid-cols-2 gap-4 h-64">
             <div className="relative rounded-2xl overflow-hidden">
               <Image
-                src="/images/hero-illustration.png"
-                alt="Donor melaporkan surplus pangan"
+                src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=800&q=80&fit=crop"
+                alt="Donor menyerahkan surplus pangan di pasar"
                 fill
                 className="object-cover object-top"
                 sizes="50vw"
@@ -116,8 +115,8 @@ export function HowItWorksSection() {
             </div>
             <div className="relative rounded-2xl overflow-hidden">
               <Image
-                src="/images/hero-illustration.png"
-                alt="Volunteer mengantarkan ke penerima"
+                src="https://images.unsplash.com/photo-1578357078586-491adf1aa5ba?w=800&q=80&fit=crop"
+                alt="Volunteer mengantar makanan ke penerima manfaat"
                 fill
                 className="object-cover object-center"
                 sizes="50vw"
@@ -161,17 +160,16 @@ export function HowItWorksSection() {
               </p>
             </div>
 
-            <Link href="/register" className="mt-6 inline-flex">
-              <Button
-                variant="primary"
-                size="lg"
-                className="bg-white text-[#2F6E4F] hover:bg-[#E4F0E8] border-0 gap-2"
+            <div>
+              <Link
+                href="/register"
+                className="mt-6 inline-flex items-center gap-2 bg-white text-[#2F6E4F] font-semibold text-sm px-6 py-3 rounded-[8px] hover:bg-[#E4F0E8] transition-colors"
                 id="cta-how-it-works"
               >
                 Gabung Jadi Volunteer
                 <ArrowRight size={16} />
-              </Button>
-            </Link>
+              </Link>
+            </div>
           </div>
 
           {/* Numbered list */}

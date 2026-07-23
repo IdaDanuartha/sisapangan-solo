@@ -157,7 +157,7 @@ export function AboutSection() {
         {/* Full-width image */}
         <div className="relative w-full h-64 sm:h-80 rounded-2xl overflow-hidden mb-10">
           <Image
-            src="/images/hero-illustration.png"
+            src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80&fit=crop"
             alt="Tim SisaPangan Solo bergerak bersama mendistribusikan pangan"
             fill
             className="object-cover"

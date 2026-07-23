@@ -99,7 +99,7 @@ export function RolesSection() {
           {/* Image */}
           <div className="relative rounded-2xl overflow-hidden h-[400px] lg:h-[480px]">
             <Image
-              src="/images/hero-illustration.png"
+              src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&q=80&fit=crop"
               alt="Para peran dalam ekosistem SisaPangan Solo"
               fill
               className="object-cover"

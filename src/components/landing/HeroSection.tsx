@@ -5,6 +5,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle, LeafyGreen, HandHeart, BarChart3 } from "lucide-react";
 
+// Unsplash photos — food rescue / community / vegetable market context
+const PHOTOS = {
+  // Tall left card — donor handing over food at market
+  donor: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=600&q=80&fit=crop",
+  // Middle top card — volunteer packing food donations
+  volunteer: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&q=80&fit=crop",
+  // Right bottom card — community receiving meals
+  community: "https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80&fit=crop",
+};
+
 export function HeroSection() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
@@ -56,7 +66,7 @@ export function HeroSection() {
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Headline block — center aligned, large */}
+        {/* Headline block */}
         <div className="text-center mb-4">
           <h1
             ref={headlineRef}
@@ -98,8 +108,8 @@ export function HeroSection() {
           <div className="relative rounded-2xl overflow-hidden min-h-[320px] md:min-h-[420px] group cursor-pointer">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1E4A35]/30 to-[#1E4A35]/90 z-10" />
             <Image
-              src="/images/hero-illustration.png"
-              alt="Donor menyerahkan pangan surplus"
+              src={PHOTOS.donor}
+              alt="Donor menyerahkan pangan surplus di pasar lokal"
               fill
               className="object-cover transition-transform duration-700 group-hover:scale-105"
               priority
@@ -123,14 +133,14 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Card Tengah — 2 image stack + info box */}
+          {/* Card Tengah — image top + info box bottom */}
           <div className="flex flex-col gap-4">
             <div className="relative rounded-2xl overflow-hidden flex-1 min-h-[180px] group cursor-pointer">
               <Image
-                src="/images/hero-illustration.png"
-                alt="Relawan mengambil surplus pangan"
+                src={PHOTOS.volunteer}
+                alt="Relawan mengemas dan mengambil surplus pangan"
                 fill
-                className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             </div>
@@ -151,7 +161,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Card Kanan — image + info box below */}
+          {/* Card Kanan — info box top + image bottom */}
           <div className="flex flex-col gap-4">
             <div className="rounded-2xl bg-[#FBEBD8] p-5">
               <div className="flex items-start gap-3">
@@ -170,13 +180,13 @@ export function HeroSection() {
             </div>
             <div className="relative rounded-2xl overflow-hidden flex-1 min-h-[220px] group cursor-pointer">
               <Image
-                src="/images/hero-illustration.png"
-                alt="Penerima manfaat mendapatkan pangan"
+                src={PHOTOS.community}
+                alt="Komunitas penerima manfaat mendapatkan makanan"
                 fill
                 className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1E4A35]/50 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1E4A35]/60 to-transparent z-10" />
               <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
                 <Link
                   href="/register"
