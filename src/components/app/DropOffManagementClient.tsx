@@ -290,7 +290,7 @@ export function DropOffManagementClient() {
   );
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto space-y-6">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
@@ -305,9 +305,9 @@ export function DropOffManagementClient() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: List of Beneficiaries (2 cols) */}
         <div className="lg:col-span-2 bg-white rounded-[20px] p-5 shadow-sm space-y-4 border border-[#E4F0E8]/40">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-2">
             <h2 className="text-base font-semibold text-[#1B1F1C]">Daftar Lokasi Drop-off</h2>
-            <div className="relative w-56">
+            <div className="relative w-full xs:w-56">
               <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#9AA39C]" />
               <input
                 type="search"

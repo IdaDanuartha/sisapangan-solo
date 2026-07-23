@@ -426,7 +426,7 @@ export function BatchDetailClient({ batch, logs, currentUserId, currentUserRole,
     : null;
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-2xl mx-auto">
+    <div className="px-3 sm:px-6 py-5 max-w-2xl mx-auto">
       {/* Back & Actions */}
       <div className="flex items-center justify-between mb-5">
         <button

@@ -352,13 +352,13 @@ export default function ProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-xl mx-auto">
+    <div className="px-3 sm:px-6 py-5 max-w-xl mx-auto">
       <div className="mb-6">
         <h1 className="text-xl font-bold text-[#1B1F1C]">Profil Saya</h1>
         <p className="text-sm text-[#9AA39C]">Kelola data akun dan pengaturan notifikasi</p>
       </div>
 
-      <form onSubmit={handleSave} className="bg-white rounded-[20px] p-6 shadow-sm space-y-4">
+      <form onSubmit={handleSave} className="bg-white rounded-[20px] p-4 xs:p-6 shadow-sm space-y-4">
         <Input
           label="Nama Lengkap / Nama Usaha"
           id="profile-name"
@@ -464,8 +464,8 @@ export default function ProfilePage() {
         )}
 
         {profile.role === "volunteer" && (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2">
+          <div className="grid grid-cols-2 xs:grid-cols-3 gap-3">
+            <div className="xs:col-span-2">
               <Input
                 label="Estimasi Kapasitas Penerima"
                 id="profile-capacity-amount"

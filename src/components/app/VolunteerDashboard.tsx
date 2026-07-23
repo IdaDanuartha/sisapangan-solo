@@ -139,7 +139,7 @@ export function VolunteerDashboard({
   const currentChart = getRealChartData()[timeFilter];
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto">
       <div className="mb-6">
         <h1 className="text-xl font-bold text-[#1B1F1C]">
           {role === "non-consumption"
@@ -252,25 +252,25 @@ export function VolunteerDashboard({
             <h3 className="text-sm font-bold text-[#1B1F1C]">{currentChart.title}</h3>
             <p className="text-xs text-[#9AA39C]">{currentChart.subtitle}</p>
           </div>
-          <div className="flex bg-[#F4F6F3] p-1 rounded-[10px] gap-1 self-start sm:self-center">
+          <div className="flex overflow-x-auto gap-1 self-start sm:self-center pb-0.5 max-w-full no-scrollbar">
             {(["minggu_ini", "bulan_ini", "tahun_ini", "5_tahun_terakhir"] as const).map((filter) => (
               <button
                 key={filter}
                 onClick={() => setTimeFilter(filter)}
                 className={[
-                  "px-3 py-1 rounded-[8px] text-[10px] font-bold transition-all whitespace-nowrap cursor-pointer",
+                  "px-2 sm:px-3 py-1 rounded-[8px] text-[9px] sm:text-[10px] font-bold transition-all whitespace-nowrap cursor-pointer flex-shrink-0",
                   timeFilter === filter
                     ? "bg-[#2F6E4F] text-white shadow-sm"
                     : "text-[#5B655D] hover:text-[#2F6E4F]",
                 ].join(" ")}
               >
                 {filter === "minggu_ini"
-                  ? "Minggu Ini"
+                  ? "Minggu"
                   : filter === "bulan_ini"
-                  ? "Bulan Ini"
+                  ? "Bulan"
                   : filter === "tahun_ini"
-                  ? "Tahun Ini"
-                  : "5 Tahun Terakhir"}
+                  ? "Tahun"
+                  : "5 Thn"}
               </button>
             ))}
           </div>

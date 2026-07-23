@@ -355,46 +355,46 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
   );
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto space-y-6 flex flex-col min-h-screen pb-12">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6 flex flex-col min-h-screen pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col justify-between items-start gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#1B1F1C]">Riwayat Distribusi</h1>
+          <h1 className="text-xl xs:text-2xl font-bold text-[#1B1F1C]">Riwayat Distribusi</h1>
           <p className="text-sm text-[#9AA39C]">
             Melihat riwayat klaim, pickup, distribusi, dan status akhir surplus pangan.
           </p>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center w-full">
           {/* View Switcher: List vs Peta */}
           <div className="flex bg-[#F4F6F3] p-1 rounded-[10px] mr-1">
             <button
               onClick={() => setView("list")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-2 xs:px-3 py-1.5 rounded-[8px] text-xs font-bold transition-all ${
                 view === "list"
                   ? "bg-white text-[#2F6E4F] shadow-sm"
                   : "text-[#5B655D] hover:text-[#1B1F1C]"
               }`}
             >
               <List size={13} />
-              Daftar
+              <span className="hidden xs:inline">Daftar</span>
             </button>
             <button
               onClick={() => setView("map")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-2 xs:px-3 py-1.5 rounded-[8px] text-xs font-bold transition-all ${
                 view === "map"
                   ? "bg-white text-[#2F6E4F] shadow-sm"
                   : "text-[#5B655D] hover:text-[#1B1F1C]"
               }`}
             >
               <Map size={13} />
-              Peta
+              <span className="hidden xs:inline">Peta</span>
             </button>
           </div>
 
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="h-10 px-4 rounded-[8px] border border-[#9AA39C] bg-white text-xs font-semibold text-[#1B1F1C] focus:outline-none cursor-pointer"
+            className="flex-1 h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs font-semibold text-[#1B1F1C] focus:outline-none cursor-pointer"
           >
             <option value="Semua">Semua Status</option>
             <option value="Tersedia">Tersedia</option>
@@ -405,10 +405,10 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
           <Button
             onClick={downloadCSV}
             variant="secondary"
-            className="h-10 px-5 rounded-[8px] border border-[#1B1F1C] bg-white hover:bg-[#F4F6F3] text-xs font-bold text-[#1B1F1C]"
+            className="h-10 px-3 xs:px-5 rounded-[8px] border border-[#1B1F1C] bg-white hover:bg-[#F4F6F3] text-xs font-bold text-[#1B1F1C] flex-shrink-0"
             id="btn-download-history"
           >
-            Unduh Riwayat
+            <span className="hidden xs:inline">Unduh </span>CSV
           </Button>
         </div>
       </div>
@@ -426,19 +426,19 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
         />
         
         {/* 3 Select dropdowns */}
-        <div className="flex gap-2 w-full md:w-auto">
+        <div className="grid grid-cols-3 gap-2 w-full md:w-auto">
           <input
             type="date"
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
-            placeholder="Pilih Tanggal"
+            className="h-10 px-2 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer w-full"
+            placeholder="Tanggal"
           />
 
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
+            className="h-10 px-2 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer w-full"
           >
             <option value="">Kategori</option>
             {["Makanan Matang", "Roti/Bakery", "Buah Potong", "Sayuran", "Bahan Segar"].map((c) => (
@@ -449,7 +449,7 @@ export function HistoryClient({ batches, role }: { batches: Batch[]; role: strin
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
+            className="h-10 px-2 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer w-full"
           >
             <option value="Semua">Status</option>
             <option value="Tersedia">Tersedia</option>

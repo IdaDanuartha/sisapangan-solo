@@ -450,7 +450,7 @@ export function EditSurplusClient({ batch, currentUserId, currentUserRole }: Pro
   };
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-2xl mx-auto space-y-6">
+    <div className="px-3 sm:px-6 py-5 max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <button
@@ -466,7 +466,7 @@ export function EditSurplusClient({ batch, currentUserId, currentUserRole }: Pro
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-[20px] p-6 shadow-sm border border-[#E4F0E8]">
+      <form onSubmit={handleSubmit} className="space-y-5 bg-white rounded-[20px] p-4 xs:p-6 shadow-sm border border-[#E4F0E8]">
         {/* Foto Makanan / Thumbnail Upload */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-[#1B1F1C] block">

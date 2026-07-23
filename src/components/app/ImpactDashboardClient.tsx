@@ -341,7 +341,7 @@ export function ImpactDashboardClient({
   };
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto space-y-6">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -365,7 +365,7 @@ export function ImpactDashboardClient({
 
       {/* Dynamic Actionable Recommendations Banner */}
       <div
-        className={`rounded-[16px] p-4.5 border flex items-start gap-3.5 shadow-xs transition-all ${
+        className={`rounded-[16px] p-3 sm:p-4 border flex items-start gap-2 sm:gap-3.5 shadow-xs transition-all ${
           dynamicRecommendation.type === "urgent"
             ? "bg-[#FEF2F2] border-[#FCA5A5] text-[#991B1B]"
             : dynamicRecommendation.type === "non-consumption"
@@ -404,7 +404,7 @@ export function ImpactDashboardClient({
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-5 gap-2.5">
           {/* Filter 1: Periode Waktu */}
           <div>
             <label className="text-[9px] font-bold text-[#5B655D] block mb-1">Periode Waktu</label>
@@ -516,14 +516,14 @@ export function ImpactDashboardClient({
       </div>
 
       {/* CO₂ Estimate Banner */}
-      <div className="bg-[#1E4A35] text-white rounded-[16px] p-4.5 flex items-center justify-between gap-4 shadow-sm">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-[12px] bg-white/10 flex items-center justify-center text-[#E4F0E8] shrink-0">
-            <Sprout size={24} />
+      <div className="bg-[#1E4A35] text-white rounded-[16px] p-3 sm:p-4 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-[12px] bg-white/10 flex items-center justify-center text-[#E4F0E8] shrink-0">
+            <Sprout size={22} />
           </div>
           <div>
             <p className="text-xs font-medium text-[#E4F0E8]">Estimasi Emisi CO₂ yang Dihindari</p>
-            <p className="text-2xl font-bold tabular-nums mt-0.5">{computedMetrics.co2Saved.toFixed(1)} kg CO₂e</p>
+            <p className="text-xl xs:text-2xl font-bold tabular-nums mt-0.5">{computedMetrics.co2Saved.toFixed(1)} kg CO₂e</p>
           </div>
         </div>
         <p className="hidden sm:block text-[10px] text-[#9AA39C] max-w-xs text-right leading-relaxed">

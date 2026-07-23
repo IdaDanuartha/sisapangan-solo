@@ -885,7 +885,7 @@ export default function NearbySurplusPage() {
 
   const timeRemaining = (expiry: string) => {
     const diff = new Date(expiry).getTime() - Date.now();
-    if (diff <= 0) return "Sudah kedaluwarsa";
+    if (diff <= 0) return "Kedaluwarsa";
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     if (hours > 24) return `${Math.floor(hours / 24)} hari`;
@@ -902,7 +902,7 @@ export default function NearbySurplusPage() {
     : "2.7";
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto space-y-6 flex flex-col min-h-screen pb-12">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6 flex flex-col min-h-screen pb-12">
 
       {/* ===== VERIFICATION GATE ===== */}
       {isVerified === false && (
@@ -952,7 +952,7 @@ export default function NearbySurplusPage() {
       {/* Top Header & KPI Cards */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1B1F1C]">Surplus Terdekat</h1>
+          <h1 className="text-xl xs:text-2xl font-bold text-[#1B1F1C]">Surplus Terdekat</h1>
           <p className="text-sm text-[#9AA39C] mt-1">
             Penerima menemukan surplus pangan yang tersedia di sekitar lokasi.
           </p>
@@ -1003,75 +1003,102 @@ export default function NearbySurplusPage() {
       </div>
 
       {/* Search and Filters Bar */}
-      <div className="flex flex-col md:flex-row gap-3 items-center">
-        {/* Search with autocomplete */}
-        <SearchAutocomplete
-          value={search}
-          onChange={setSearch}
-          placeholder="Cari makanan, lokasi, atau donor..."
-          suggestions={searchSuggestions}
-          onSelect={handleSuggestionSelect}
-          className="flex-1 w-full"
-        />
+      <div className="flex flex-col gap-3">
+        {/* Search row with view switcher on mobile */}
+        <div className="flex gap-2 items-center w-full">
+          <SearchAutocomplete
+            value={search}
+            onChange={setSearch}
+            placeholder="Cari makanan, lokasi, atau donor..."
+            suggestions={searchSuggestions}
+            onSelect={handleSuggestionSelect}
+            className="flex-1 w-full"
+          />
+          {/* Toggle button group for mobile */}
+          <div className="flex sm:hidden bg-[#F4F6F3] rounded-[8px] p-0.5 border border-[#E4F0E8] select-none shrink-0 h-10 items-center">
+            <button
+              onClick={() => setView("list")}
+              className={`p-1.5 rounded-[6px] transition-all flex items-center justify-center ${
+                view === "list"
+                  ? "bg-white text-[#1B1F1C] shadow-sm"
+                  : "text-[#5B655D] hover:text-[#1B1F1C]"
+              }`}
+            >
+              <List size={16} />
+            </button>
+            <button
+              onClick={() => setView("map")}
+              className={`p-1.5 rounded-[6px] transition-all flex items-center justify-center ${
+                view === "map"
+                  ? "bg-white text-[#1B1F1C] shadow-sm"
+                  : "text-[#5B655D] hover:text-[#1B1F1C]"
+              }`}
+            >
+              <MapIcon size={16} />
+            </button>
+          </div>
+        </div>
 
         {/* Filters dropdowns */}
-        <div className="flex gap-2 w-full md:w-auto">
-          <div className="relative flex-1 md:flex-initial">
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="h-10 pl-3 pr-8 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full min-w-[110px]"
-            >
-              <option value="">Kategori</option>
-              {["Makanan Matang", "Roti/Bakery", "Buah Potong", "Sayuran", "Bahan Segar"].map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto justify-between items-center">
+          <div className="grid grid-cols-3 gap-1.5 w-full sm:w-auto flex-1">
+            <div className="relative w-full">
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="h-10 pl-2 pr-6 rounded-[8px] border border-[#9AA39C] bg-white text-[11px] xs:text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full"
+              >
+                <option value="">Kategori</option>
+                {["Makanan Matang", "Roti/Bakery", "Buah Potong", "Sayuran", "Bahan Segar"].map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-1.5 flex items-center">
+                <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
             </div>
-          </div>
 
-          <div className="relative flex-1 md:flex-initial">
-            <select
-              value={radiusKm}
-              onChange={(e) => setRadiusKm(Number(e.target.value))}
-              className="h-10 pl-3 pr-8 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full min-w-[90px]"
-            >
-              <option value={2}>2 km</option>
-              <option value={5}>5 km</option>
-              <option value={10}>10 km</option>
-              <option value={20}>20 km</option>
-              <option value={99999}>Semua Jarak</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            <div className="relative w-full">
+              <select
+                value={radiusKm}
+                onChange={(e) => setRadiusKm(Number(e.target.value))}
+                className="h-10 pl-2 pr-6 rounded-[8px] border border-[#9AA39C] bg-white text-[11px] xs:text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full"
+              >
+                <option value={2}>2 km</option>
+                <option value={5}>5 km</option>
+                <option value={10}>10 km</option>
+                <option value={20}>20 km</option>
+                <option value={99999}>Semua</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-1.5 flex items-center">
+                <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
             </div>
-          </div>
 
-          <div className="relative flex-1 md:flex-initial">
-            <select
-              value={filterFreshness}
-              onChange={(e) => setFilterFreshness(e.target.value)}
-              className="h-10 pl-3 pr-8 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full min-w-[110px]"
-            >
-              <option value="">Kelayakan</option>
-              <option value="safe">Layak Konsumsi</option>
-              <option value="urgent">Segera Ambil</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+            <div className="relative w-full">
+              <select
+                value={filterFreshness}
+                onChange={(e) => setFilterFreshness(e.target.value)}
+                className="h-10 pl-2 pr-6 rounded-[8px] border border-[#9AA39C] bg-white text-[11px] xs:text-xs text-[#5B655D] focus:outline-none focus:border-[#2F6E4F] cursor-pointer appearance-none w-full"
+              >
+                <option value="">Kelayakan</option>
+                <option value="safe">Layak</option>
+                <option value="urgent">Mendesak</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-1.5 flex items-center">
+                <svg width="8" height="5" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="#9AA39C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
             </div>
           </div>
 
           {/* Toggle button group */}
-          <div className="flex bg-[#F4F6F3] rounded-[8px] p-0.5 border border-[#E4F0E8] select-none shrink-0">
+          <div className="hidden sm:flex bg-[#F4F6F3] rounded-[8px] p-0.5 border border-[#E4F0E8] select-none shrink-0">
             <button
               onClick={() => setView("list")}
               className={`px-3 py-1 text-xs font-bold rounded-[6px] transition-all flex items-center gap-1 ${
@@ -1151,14 +1178,14 @@ export default function NearbySurplusPage() {
                     <div
                       key={b.id}
                       onClick={() => setSelectedBatch(b)}
-                      className={`flex gap-4 p-4 rounded-[16px] border cursor-pointer transition-all ${
+                      className={`flex gap-2.5 sm:gap-4 p-2.5 sm:p-4 rounded-[16px] border cursor-pointer transition-all ${
                         selectedBatch?.id === b.id
                           ? "bg-[#E4F0E8] border-[#2F6E4F] shadow-sm"
                           : "bg-white border-[#E4F0E8] hover:shadow-md"
                       }`}
                     >
                       {/* Visual X Placeholder / Image */}
-                      <div className="w-24 h-24 bg-[#F4F6F3] rounded-[12px] border border-[#E4F0E8] flex-shrink-0 flex items-center justify-center relative overflow-hidden">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#F4F6F3] rounded-[12px] border border-[#E4F0E8] flex-shrink-0 flex items-center justify-center relative overflow-hidden">
                         {b.photo_urls && b.photo_urls.length > 0 ? (
                           <img
                             src={b.photo_urls[0]}
@@ -1177,46 +1204,47 @@ export default function NearbySurplusPage() {
                       <div className="flex-1 min-w-0 flex flex-col justify-between">
                         <div>
                           <h3 className="text-sm font-extrabold text-[#1B1F1C] truncate">{b.name}</h3>
-                          <p className="text-[10px] text-[#9AA39C] font-semibold mt-0.5">
+                          <p className="text-[10px] text-[#9AA39C] font-semibold mt-0.5 truncate">
                             Donor: {b.profiles?.name || "Warung Makan Sederhana"}
                           </p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-[#5B655D] font-bold mt-1.5">
-                          <span className="flex items-center gap-0.5">
+                        <div className="flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1 text-[10px] text-[#5B655D] font-bold mt-1">
+                          <span className="flex items-center gap-0.5 whitespace-nowrap">
                             <MapPin size={11} className="text-[#9AA39C]" />
                             {b.distance_km?.toFixed(1)} km
                           </span>
-                          <span className="flex items-center gap-0.5">
+                          <span className="flex items-center gap-0.5 whitespace-nowrap">
                             <Package size={11} className="text-[#9AA39C]" />
                             {b.quantity} {b.unit}
                           </span>
-                          <span className="flex items-center gap-0.5">
+                          <span className="flex items-center gap-0.5 whitespace-nowrap">
                             <Clock size={11} className="text-[#9AA39C]" />
                             {timeRemaining(b.estimated_expiry)}
                           </span>
                         </div>
 
-                        <p className="text-[10px] text-[#9AA39C] mt-2 line-clamp-1 leading-relaxed font-semibold">
+                        <p className="text-[10px] text-[#9AA39C] mt-1.5 line-clamp-1 leading-relaxed font-semibold">
                           {b.notes || "Sisa donasi berlebih dari operasional, dikemas dengan higienis dan rapi."}
                         </p>
                       </div>
 
                       {/* Card Right Actions */}
-                      <div className="flex flex-col items-end justify-between shrink-0 pl-2">
-                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide uppercase border ${
+                      <div className="flex flex-col items-end justify-between shrink-0 pl-1 sm:pl-2">
+                        <span className={`px-1.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-bold tracking-wide uppercase border whitespace-nowrap ${
                           b.freshness_status === "safe"
                             ? "bg-[#E8F7ED] text-[#1F7A3B] border-[#3AA65A]/20"
                             : "bg-[#FEF6E4] text-[#A66A00] border-[#F0A93B]/20"
                         }`}>
-                          {b.freshness_status === "safe" ? "Layak Konsumsi" : "Segera Ambil"}
+                          <span className="hidden xs:inline">{b.freshness_status === "safe" ? "Layak Konsumsi" : "Segera Ambil"}</span>
+                          <span className="xs:hidden">{b.freshness_status === "safe" ? "Layak" : "Mendesak"}</span>
                         </span>
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             startClaimFlow(b);
                           }}
-                          className="h-8 px-4 border border-[#2F6E4F] hover:bg-[#E4F0E8] text-[10px] font-bold text-[#2F6E4F] rounded-[8px] transition-colors"
+                          className="h-8 px-3 sm:px-4 border border-[#2F6E4F] hover:bg-[#E4F0E8] text-[10px] font-bold text-[#2F6E4F] rounded-[8px] transition-colors"
                         >
                           Klaim
                         </button>

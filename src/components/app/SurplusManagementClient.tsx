@@ -130,11 +130,11 @@ export function SurplusManagementClient({ initialBatches, currentUserId, current
   );
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto space-y-6 flex flex-col min-h-screen pb-12 font-sans">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6 flex flex-col min-h-screen pb-12 font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1B1F1C]">Data Surplus Pangan</h1>
+          <h1 className="text-xl xs:text-2xl font-bold text-[#1B1F1C]">Data Surplus Pangan</h1>
           <p className="text-sm text-[#9AA39C]">
             Kelola dan pantau seluruh surplus pangan yang Anda posting untuk diselamatkan.
           </p>
@@ -164,14 +164,14 @@ export function SurplusManagementClient({ initialBatches, currentUserId, current
         />
 
         {/* Dropdowns */}
-        <div className="flex gap-2 w-full md:w-auto">
+        <div className="grid grid-cols-2 gap-2 w-full md:w-auto">
           <select
             value={filterCategory}
             onChange={(e) => {
               setFilterCategory(e.target.value);
               setCurrentPage(1);
             }}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
+            className="h-10 px-2 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer w-full"
           >
             <option value="">Semua Kategori</option>
             {categories.map((c) => (
@@ -185,7 +185,7 @@ export function SurplusManagementClient({ initialBatches, currentUserId, current
               setFilterStatus(e.target.value);
               setCurrentPage(1);
             }}
-            className="h-10 px-3 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer flex-1 md:flex-initial"
+            className="h-10 px-2 rounded-[8px] border border-[#9AA39C] bg-white text-xs text-[#5B655D] focus:outline-none cursor-pointer w-full"
           >
             <option value="Semua">Semua Status</option>
             {statuses.map((s) => (

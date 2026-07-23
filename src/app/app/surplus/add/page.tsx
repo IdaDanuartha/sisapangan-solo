@@ -684,9 +684,9 @@ function AddSurplusForm() {
     : "Distribusi cepat disarankan";
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto space-y-6">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[#1B1F1C]">Tambah Surplus Pangan</h1>
+        <h1 className="text-xl xs:text-2xl font-bold text-[#1B1F1C]">Tambah Surplus Pangan</h1>
         <p className="text-sm text-[#9AA39C]">Donor mengunggah informasi makanan berlebih untuk diproses dan disalurkan.</p>
       </div>
 
@@ -718,7 +718,7 @@ function AddSurplusForm() {
             >
               {s.step}
             </div>
-            <span className={`text-[10px] font-bold mt-1.5 transition-colors ${
+            <span className={`hidden xs:block text-[10px] font-bold mt-1.5 transition-colors ${
               s.step <= step ? "text-[#2F6E4F]" : "text-[#9AA39C]"
             }`}>
               {s.label}

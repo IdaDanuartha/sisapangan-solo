@@ -697,7 +697,7 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
   const totalLoggedEvents = activityLogs.length || 1;
 
   return (
-    <div className="px-4 sm:px-6 py-6 max-w-7xl mx-auto space-y-6">
+    <div className="px-3 sm:px-6 py-5 max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -806,20 +806,20 @@ function AdminDashboardContent({ role = "admin" }: { role?: string }) {
               <h2 className="text-base font-semibold text-[#1B1F1C]">Perkembangan Platform SisaPangan</h2>
               <p className="text-xs text-[#9AA39C]">Statistik volume penyelamatan (kg) dan pertumbuhan relawan/donor</p>
             </div>
-            <div className="flex bg-[#F4F6F3] p-1 rounded-[10px] gap-1 self-start sm:self-center">
+            <div className="flex overflow-x-auto gap-1 self-start sm:self-center pb-0.5 max-w-full no-scrollbar">
               {(["minggu_ini", "bulan_ini", "tahun_ini", "5_tahun_terakhir"] as const).map((filter) => (
                 <button
                   key={filter}
                   type="button"
                   onClick={() => setTimeFilter(filter)}
                   className={[
-                    "px-3 py-1 rounded-[8px] text-[10px] font-bold transition-all whitespace-nowrap cursor-pointer",
+                    "px-2 sm:px-3 py-1 rounded-[8px] text-[9px] sm:text-[10px] font-bold transition-all whitespace-nowrap cursor-pointer flex-shrink-0",
                     timeFilter === filter
                       ? "bg-[#2F6E4F] text-white shadow-sm"
                       : "text-[#5B655D] hover:text-[#2F6E4F]",
                   ].join(" ")}
                 >
-                  {filter === "minggu_ini" ? "Minggu Ini" : filter === "bulan_ini" ? "Bulan Ini" : filter === "tahun_ini" ? "Tahun Ini" : "5 Tahun Terakhir"}
+                  {filter === "minggu_ini" ? "Minggu" : filter === "bulan_ini" ? "Bulan" : filter === "tahun_ini" ? "Tahun" : "5 Thn"}
                 </button>
               ))}
             </div>

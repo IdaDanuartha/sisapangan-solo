@@ -352,7 +352,7 @@ export function AppShell({
           className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[#E4F0E8] z-30 safe-area-bottom"
           aria-label="Navigasi bawah"
         >
-          <div className="flex items-center justify-around h-16">
+          <div className="flex items-center justify-around h-14 xs:h-16">
             {bottomItems.map((item) => {
               const isActive = getIsActive(item.href);
               return (
@@ -360,15 +360,15 @@ export function AppShell({
                   key={item.href}
                   href={item.href}
                   className={[
-                    "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-[8px] min-w-[56px] transition-colors",
+                    "flex flex-col items-center gap-0.5 px-1 xs:px-3 py-1.5 rounded-[8px] flex-1 min-w-0 max-w-[72px] transition-colors",
                     isActive ? "text-[#2F6E4F]" : "text-[#9AA39C]",
                   ].join(" ")}
                 >
                   <item.icon
-                    size={20}
+                    size={18}
                     strokeWidth={isActive ? 2.5 : 1.75}
                   />
-                  <span className="text-[10px] font-medium leading-none">
+                  <span className="text-[9px] xs:text-[10px] font-medium leading-none truncate w-full text-center">
                     {item.label}
                   </span>
                 </Link>
